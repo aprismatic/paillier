@@ -68,7 +68,7 @@ namespace PaillierExt
         protected override byte[] ProcessFinalDataBlock(byte[] p_final_block)
         {
             if (!(p_final_block.Length > 0))
-                return new byte[0];
+                return new byte[0];     //return empty block
 
             // ***************** SPECIAL ******************* //
             return ProcessDataBlock(PadPlaintextBlock(p_final_block));

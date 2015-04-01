@@ -56,7 +56,8 @@ public class Test
         return Result;
     }
 
-    public static void TestTextEncryption(string message = "This is to test Paillier encryption and hopefully this message contains more than 2 blocks please please please please please please please pleaseplease please please pleaseplease please please pleaseplease please please please          ", int keySize = 384, PaillierPaddingMode padding = PaillierPaddingMode.Zeros)
+    public static void TestTextEncryption(string message = "This is to test Paillier encryption and hopefully this message contains more than 2 blocks please please please please please please please please please please please pleaseplease please please pleaseplease please please please          ", 
+        int keySize = 384, PaillierPaddingMode padding = PaillierPaddingMode.Zeros)
     {
         Console.WriteLine();
         Console.WriteLine("-- Testing string encryption ---");
@@ -93,28 +94,29 @@ public class Test
     public static void TestAddition_Batch()
     {
         int error_counter = 0;
-        for (int i = 0; i < 10; i++)
+        int iteration = 40;
+        Console.WriteLine("-- Testing Addition Homomorphic property in batch---");
+
+        for (int i = 0; i < iteration; i++)
         {
             if (!TestAddition())
             {
-                Console.WriteLine("***********Error Encountered!!");
                 error_counter++;
             }
         }
         Console.WriteLine();
-        Console.WriteLine("There are {0} / 10 errors.", error_counter);
+        Console.WriteLine("There are {0} / {1} errors.", error_counter, iteration);
     }
+
     public static Boolean TestAddition()
     {
-        Console.WriteLine();
-        Console.WriteLine("-- Testing Addition Homomorphic property ---");
 
         Paillier algorithm = new PaillierManaged();
         algorithm.KeySize = 384;
-        algorithm.Padding = PaillierPaddingMode.Zeros;
+        algorithm.Padding = PaillierPaddingMode.LeadingZeros;
 
         string parametersXML = algorithm.ToXmlString(true);
-        Console.WriteLine("\n{0}\n", PrettifyXML(parametersXML));
+        //Console.WriteLine("\n{0}\n", PrettifyXML(parametersXML));
 
         Paillier encryptAlgorithm = new PaillierManaged();
         encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
@@ -137,26 +139,42 @@ public class Test
         byte[] A_dec_bytes = decryptAlgorithm.DecryptData(A_enc_bytes);
         byte[] B_dec_bytes = decryptAlgorithm.DecryptData(B_enc_bytes);
 
-        //getting homomorphic addition result
+        // getting homomorphic addition result
         byte[] C_enc_bytes = encryptAlgorithm.Addition(A_enc_bytes, B_enc_bytes);
         byte[] C_dec_bytes = decryptAlgorithm.DecryptData(C_enc_bytes);
 
         // strip off trailing zeros
-        byte[] A_dec_stripped = StripTrailingZeros(A_dec_bytes, A_bytes.Length);
-        byte[] B_dec_stripped = StripTrailingZeros(B_dec_bytes, B_bytes.Length);
-        byte[] C_dec_stripped = StripTrailingZeros(C_dec_bytes);
+        //byte[] A_dec_stripped = StripTrailingZeros(A_dec_bytes, A_bytes.Length);
+        //byte[] B_dec_stripped = StripTrailingZeros(B_dec_bytes, B_bytes.Length);
+        //byte[] C_dec_stripped = StripTrailingZeros(C_dec_bytes);
 
         // convert to BigInteger
-        BigInteger A_dec = new BigInteger(A_dec_stripped);
-        BigInteger B_dec = new BigInteger(B_dec_stripped);
-        BigInteger C_dec = new BigInteger(C_dec_stripped);
-
-        // printing out
-        Console.WriteLine("Plaintext: {0} + {1} = {2}", A.ToString(), B.ToString(), (A+B).ToString());
-        Console.WriteLine("Encrypted: {0} + {1} = {2}", A_dec.ToString(), B_dec.ToString(), C_dec.ToString());
+        BigInteger A_dec = new BigInteger(A_dec_bytes);
+        BigInteger B_dec = new BigInteger(B_dec_bytes);
+        BigInteger C_dec = new BigInteger(C_dec_bytes);
 
         if (C_dec != A + B)
         {
+            Console.WriteLine();
+            Console.WriteLine("***********Error Encountered!!***");
+            Console.WriteLine("\n{0}\n", PrettifyXML(parametersXML));
+            // printing out
+            Console.WriteLine("Plaintext: {0} + {1} = {2}", A.ToString(), B.ToString(), (A + B).ToString());
+            Console.WriteLine("Encrypted: {0} + {1} = {2}", A_dec.ToString(), B_dec.ToString(), C_dec.ToString());
+            Console.WriteLine();
+
+            Console.WriteLine("Re-run the numbers with different key..");
+            Rerun_SameNumbers(A, B);
+            Console.WriteLine();
+
+            Console.WriteLine("Re-run the same key with different numbers..");
+            Rerun_SameKey(encryptAlgorithm, decryptAlgorithm);
+            Console.WriteLine();
+
+            Console.WriteLine("Re-run with same key and same numbers..");
+            Rerun_SamekeyNumber(encryptAlgorithm, decryptAlgorithm, A, B);
+            Console.WriteLine();
+
             return false;
         }
         return true;
@@ -183,6 +201,105 @@ public class Test
         Array.Copy(array, 0, array_stripped, 0, i+1);
 
         return array_stripped;
+    }
+
+    public static void Rerun_SameNumbers(BigInteger A, BigInteger B)
+    {
+        Paillier algorithm = new PaillierManaged();
+        algorithm.KeySize = 384;
+        algorithm.Padding = PaillierPaddingMode.LeadingZeros;
+
+        string parametersXML = algorithm.ToXmlString(true);
+        //Console.WriteLine("\n{0}\n", PrettifyXML(parametersXML));
+
+        Paillier encryptAlgorithm = new PaillierManaged();
+        encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
+
+        Paillier decryptAlgorithm = new PaillierManaged();
+        decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
+
+        byte[] A_bytes = A.getBytes();
+        byte[] B_bytes = B.getBytes();
+
+        //encrypt A and B
+        byte[] A_enc_bytes = encryptAlgorithm.EncryptData(A.getBytes());
+        byte[] B_enc_bytes = encryptAlgorithm.EncryptData(B.getBytes());
+
+        // decrypt A and B
+        byte[] A_dec_bytes = decryptAlgorithm.DecryptData(A_enc_bytes);
+        byte[] B_dec_bytes = decryptAlgorithm.DecryptData(B_enc_bytes);
+
+        //getting homomorphic addition result
+        byte[] C_enc_bytes = encryptAlgorithm.Addition(A_enc_bytes, B_enc_bytes);
+        byte[] C_dec_bytes = decryptAlgorithm.DecryptData(C_enc_bytes);
+
+        // convert to BigInteger
+        BigInteger A_dec = new BigInteger(A_dec_bytes);
+        BigInteger B_dec = new BigInteger(B_dec_bytes);
+        BigInteger C_dec = new BigInteger(C_dec_bytes);
+
+        // printing out
+        Console.WriteLine("Plaintext: {0} + {1} = {2}", A.ToString(), B.ToString(), (A + B).ToString());
+        Console.WriteLine("Encrypted: {0} + {1} = {2}", A_dec.ToString(), B_dec.ToString(), C_dec.ToString());
+    }
+
+    public static void Rerun_SameKey(Paillier encryptAlgorithm, Paillier decryptAlgorithm)
+    {
+        Random random = new Random();
+        BigInteger A = new BigInteger(random.Next(32768));
+        BigInteger B = new BigInteger(random.Next(32768));
+
+        byte[] A_bytes = A.getBytes();
+        byte[] B_bytes = B.getBytes();
+
+        //encrypt A and B
+        byte[] A_enc_bytes = encryptAlgorithm.EncryptData(A.getBytes());
+        byte[] B_enc_bytes = encryptAlgorithm.EncryptData(B.getBytes());
+
+        // decrypt A and B
+        byte[] A_dec_bytes = decryptAlgorithm.DecryptData(A_enc_bytes);
+        byte[] B_dec_bytes = decryptAlgorithm.DecryptData(B_enc_bytes);
+
+        // getting homomorphic addition result
+        byte[] C_enc_bytes = encryptAlgorithm.Addition(A_enc_bytes, B_enc_bytes);
+        byte[] C_dec_bytes = decryptAlgorithm.DecryptData(C_enc_bytes);
+
+        // convert to BigInteger
+        BigInteger A_dec = new BigInteger(A_dec_bytes);
+        BigInteger B_dec = new BigInteger(B_dec_bytes);
+        BigInteger C_dec = new BigInteger(C_dec_bytes);
+
+        // printing out
+        Console.WriteLine("Plaintext: {0} + {1} = {2}", A.ToString(), B.ToString(), (A + B).ToString());
+        Console.WriteLine("Encrypted: {0} + {1} = {2}", A_dec.ToString(), B_dec.ToString(), C_dec.ToString());
+    }
+
+    public static void Rerun_SamekeyNumber(Paillier encryptAlgorithm, Paillier decryptAlgorithm,
+        BigInteger A, BigInteger B)
+    {
+        byte[] A_bytes = A.getBytes();
+        byte[] B_bytes = B.getBytes();
+
+        //encrypt A and B
+        byte[] A_enc_bytes = encryptAlgorithm.EncryptData(A.getBytes());
+        byte[] B_enc_bytes = encryptAlgorithm.EncryptData(B.getBytes());
+
+        // decrypt A and B
+        byte[] A_dec_bytes = decryptAlgorithm.DecryptData(A_enc_bytes);
+        byte[] B_dec_bytes = decryptAlgorithm.DecryptData(B_enc_bytes);
+
+        // getting homomorphic addition result
+        byte[] C_enc_bytes = encryptAlgorithm.Addition(A_enc_bytes, B_enc_bytes);
+        byte[] C_dec_bytes = decryptAlgorithm.DecryptData(C_enc_bytes);
+
+        // convert to BigInteger
+        BigInteger A_dec = new BigInteger(A_dec_bytes);
+        BigInteger B_dec = new BigInteger(B_dec_bytes);
+        BigInteger C_dec = new BigInteger(C_dec_bytes);
+
+        // printing out
+        Console.WriteLine("Plaintext: {0} + {1} = {2}", A.ToString(), B.ToString(), (A + B).ToString());
+        Console.WriteLine("Encrypted: {0} + {1} = {2}", A_dec.ToString(), B_dec.ToString(), C_dec.ToString());
     }
 }
 
