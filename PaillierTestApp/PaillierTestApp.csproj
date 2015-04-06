@@ -36,6 +36,9 @@
     <StartupObject>Test</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BigInteger">
+      <HintPath>..\packages\BigInteger.1.0.4\lib\BigInteger.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PaillierExt\PaillierExt.csproj">
