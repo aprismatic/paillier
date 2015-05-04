@@ -10,7 +10,7 @@ public class Test
 {
     public static void Main()
     {
-        //TestTextEncryption();
+        TestTextEncryption();
         TestAddition_Batch();
     }
 
