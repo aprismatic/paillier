@@ -36,7 +36,9 @@ namespace PaillierExt
             // add the public elements from the parameters
             x_sb.Append("<N>" + Convert.ToBase64String(x_params.N) + "</N>");
             x_sb.Append("<G>" + Convert.ToBase64String(x_params.G) + "</G>");
-            x_sb.Append("<Padding>" + Padding.ToString() + "</Padding>");
+            //x_sb.Append("<Padding>" + Padding.ToString() + "</Padding>");
+            x_sb.Append("<Padding>" + x_params.Padding.ToString() + "</Padding>");
+
             if (p_include_private)
             {
                 // we need to include X, which is the part of private key
