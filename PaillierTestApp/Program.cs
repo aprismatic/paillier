@@ -11,7 +11,7 @@ public class Test
     public static void Main()
     {
         TestTextEncryption();
-        TestAddition_Batch();
+        //TestAddition_Batch();
     }
 
     public static String PrettifyXML(String XML)
