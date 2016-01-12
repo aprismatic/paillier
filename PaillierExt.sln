@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaillierExt", "PaillierExt\PaillierExt.csproj", "{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}"
 EndProject
@@ -10,15 +10,20 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Release and Deploy|Any CPU = Release and Deploy|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Release and Deploy|Any CPU.ActiveCfg = Release and Deploy|Any CPU
+		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Release and Deploy|Any CPU.Build.0 = Release and Deploy|Any CPU
 		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DCC3CA0D-A20C-496A-AC9A-3D78E6C6F434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DCC3CA0D-A20C-496A-AC9A-3D78E6C6F434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCC3CA0D-A20C-496A-AC9A-3D78E6C6F434}.Release and Deploy|Any CPU.ActiveCfg = Release and Deploy|Any CPU
+		{DCC3CA0D-A20C-496A-AC9A-3D78E6C6F434}.Release and Deploy|Any CPU.Build.0 = Release and Deploy|Any CPU
 		{DCC3CA0D-A20C-496A-AC9A-3D78E6C6F434}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DCC3CA0D-A20C-496A-AC9A-3D78E6C6F434}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PaillierTestApp</RootNamespace>
     <AssemblyName>PaillierTestApp</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -36,9 +36,19 @@
   <PropertyGroup>
     <StartupObject>Test</StartupObject>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release and Deploy|AnyCPU'">
+    <OutputPath>bin\Release and Deploy\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BigInteger">
-      <HintPath>..\packages\BigInteger.1.0.4\lib\BigInteger.dll</HintPath>
+    <Reference Include="BigInteger, Version=1.0.4.36383, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BigInteger.1.0.4.36383\lib\net20\BigInteger.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
