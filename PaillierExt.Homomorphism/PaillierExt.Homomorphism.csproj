@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}</ProjectGuid>
+    <ProjectGuid>{EE2D4D0A-A0EA-484C-9787-065086C4ACA0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PaillierExt</RootNamespace>
-    <AssemblyName>PaillierExt</AssemblyName>
+    <RootNamespace>PaillierExt.Homomorphism</RootNamespace>
+    <AssemblyName>PaillierExt.Homomorphism</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,66 +21,52 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Deploy PExt|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Deploy PExt.Hom|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BigInteger, Version=1.0.6.32395, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\BigInteger.1.0.6.32395\lib\net20\BigInteger.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PaillierExt.Homomorphism, Version=0.9.3.32453, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PaillierExt.Homomorphism.0.9.3.32453\lib\net40\PaillierExt.Homomorphism.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Paillier.cs" />
-    <Compile Include="PaillierAbstractCipher.cs" />
-    <Compile Include="PaillierDecryptor.cs" />
-    <Compile Include="PaillierEncryptor.cs" />
-    <Compile Include="PaillierKeyStruct.cs" />
-    <Compile Include="PaillierManaged.cs" />
-    <Compile Include="PaillierParameters.cs" />
+    <Compile Include="PaillierHomomorphism.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="PaillierExt.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>-->
-  <Target Name="AfterBuild" Condition="'$(Configuration)' == 'Deploy PExt'">
-    <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\.deploy\PExt-deployLocalNuGet.ps1&quot;">
+  <Target Name="AfterBuild" Condition="'$(Configuration)' == 'Deploy PExt.Hom'">
+    <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\.deploy\PExt.Hom-deployLocalNuGet.ps1&quot;">
     </Exec>
   </Target>
 </Project>

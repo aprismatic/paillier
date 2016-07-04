@@ -17,7 +17,7 @@ namespace PaillierExt
         private PaillierKeyStruct o_key_struct;
 
         public PaillierManaged()
-        {            
+        {
             // create the key struct
             o_key_struct = new PaillierKeyStruct();
 
@@ -53,18 +53,17 @@ namespace PaillierExt
             }
         }
 
-        //TODO: check again for Miu
+        // TODO: check again for Miu
         // p_key_strength in normal case is passed in by keysizevalue, which is 1024
         private void CreateKeyPair(int p_key_strength)
         {
-            // create the random number generator
-            Random x_random_generator = new Random();
+            var x_random_generator = new Random(); //TODO: before release switch to Cryptographic RNG
 
             // create the large prime number, p and q
             // p and q are assumed to have the same bit length (512 bit each, so that N is 1024)
             // public static BigInteger genPseudoPrime(int bits, int confidence, Random rand)
-            BigInteger p = BigInteger.genPseudoPrime(p_key_strength / 2, 16, x_random_generator);
-            BigInteger q = BigInteger.genPseudoPrime(p_key_strength / 2, 16, x_random_generator);
+            var p = BigInteger.genPseudoPrime(p_key_strength / 2, 16, x_random_generator);
+            var q = BigInteger.genPseudoPrime(p_key_strength / 2, 16, x_random_generator);
 
             // compute N
             // n = p*q
@@ -74,19 +73,18 @@ namespace PaillierExt
             // g is random in Z*(n^2)
             // g = n+1 (simpler variant)
             //o_key_struct.G = o_key_struct.N + 1;
-            BigInteger temp = new BigInteger();
+            var temp = new BigInteger();
             temp.genRandomBits(2048, x_random_generator);               //Nsquare has 2048 bits
             o_key_struct.G = temp % (o_key_struct.N * o_key_struct.N);  //to make sure g is in Z(Nsquare)
             //TODO: research if this is necessary, see below
             //o_key_struct.G = o_key_struct.G + 1; // to avoid getting G = 0
-
 
             // compute lambda
             // lambda = lcm(p-1, q-1) = (p-1)*(q-1)/gcd(p-1, q-1)
             // or simpler variant, lambda = (p-1)(q-1), since p and q have same length
             //o_key_struct.Lambda = (p - 1) * (q - 1);
             o_key_struct.Lambda = (p - 1) * (q - 1) / (p - 1).gcd(q - 1);
-            
+
             // Miu =  lambda**-1 (mod n)
             //o_key_struct.Miu = o_key_struct.Lambda.modInverse(o_key_struct.N);
             o_key_struct.Miu = ((o_key_struct.G.modPow(o_key_struct.Lambda, o_key_struct.N * o_key_struct.N) - 1)
@@ -124,8 +122,10 @@ namespace PaillierExt
             o_key_struct.G = new BigInteger(p_parameters.G);
             o_key_struct.Padding = p_parameters.Padding;
 
-            if (p_parameters.Lambda != null && p_parameters.Lambda.Length > 0 &&
-                p_parameters.Miu != null && p_parameters.Miu.Length >0)
+            if ((p_parameters.Lambda != null)
+             && (p_parameters.Lambda.Length > 0)
+             && (p_parameters.Miu != null)
+             && (p_parameters.Miu.Length > 0))
             {
                 o_key_struct.Lambda = new BigInteger(p_parameters.Lambda);
                 o_key_struct.Miu = new BigInteger(p_parameters.Miu);
@@ -202,12 +202,12 @@ namespace PaillierExt
 
         public override byte[] Sign(byte[] p_hashcode)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public override bool VerifySignature(byte[] p_hashcode, byte[] p_signature)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         // ********** SPECIAL ************//
@@ -215,29 +215,18 @@ namespace PaillierExt
         // return homomorphic sum of the 2 plaintext
         public override byte[] Addition(byte[] p_first, byte[] p_second)
         {
-            //TODO: write addition
             var blocksize = o_key_struct.getCiphertextBlocksize();
 
             if (p_first.Length != blocksize)
             {
-                throw new System.ArgumentException("p_first", "Ciphertext to multiply should be exactly one block long.");
+                throw new ArgumentException("p_first", "Ciphertext to multiply should be exactly one block long.");
             }
             if (p_second.Length != blocksize)
             {
-                throw new System.ArgumentException("p_second", "Ciphertext to multiply should be exactly one block long.");
+                throw new ArgumentException("p_second", "Ciphertext to multiply should be exactly one block long.");
             }
 
-            // convert byte array to BigInteger
-            BigInteger A = new BigInteger(p_first);
-            BigInteger B = new BigInteger(p_second);
-            
-            BigInteger result = A * B % (o_key_struct.N * o_key_struct.N);
-            byte[] result_byte = result.getBytes();
-            return result_byte;
-
-            //byte[] toBeDecrypted = new byte[blocksize];
-            //Array.Copy(result_byte, 0, toBeDecrypted, blocksize - result_byte.Length, result_byte.Length);
-            //return toBeDecrypted;
+            return Homomorphism.PaillierHomomorphism.Addition(p_first, p_second, o_key_struct.N.getBytes());
         }
 
 

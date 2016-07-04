@@ -17,7 +17,6 @@ namespace PaillierExt
         public BigInteger Miu;
         public PaillierPaddingMode Padding; // this parameter should be considered part of the public key
 
-        // ******************** SPECIAL ************* //
         public int getPlaintextBlocksize()
         {
             return (N.bitCount() - 1) / 8;
