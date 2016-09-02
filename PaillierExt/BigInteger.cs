@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 
 // compile with: /doc:BigIntegerDocComment.xml
 
@@ -1657,7 +1658,7 @@ public class BigInteger
     public void genRandomBits(int bits, Random rand)
     {
         int dwords = bits >> 5;
-        int remBits = bits & 0x1F;  //this is brilliant
+        int remBits = bits & 0x1F; 
 
         if (remBits != 0)
             dwords++;
@@ -1681,6 +1682,31 @@ public class BigInteger
         }
         else
             data[dwords - 1] |= 0x80000000;
+
+        dataLength = dwords;
+
+        if (dataLength == 0)
+            dataLength = 1;
+    }
+
+    public void genRandomBits(int bits, RNGCryptoServiceProvider rng)
+    {
+        int dwords = bits >> 5;
+        int remBits = bits & 0x1F;  
+
+        if (remBits != 0)
+            dwords++;
+
+        if (dwords > maxLength)
+            throw (new ArithmeticException("Number of required bits > maxLength."));
+
+        byte[] randomBytes = new byte[4];
+
+        for (int i = 0; i < dwords; i++)
+        {
+            rng.GetBytes(randomBytes);
+            data[i] = BitConverter.ToUInt32(randomBytes, 0);
+        }
 
         dataLength = dwords;
 
