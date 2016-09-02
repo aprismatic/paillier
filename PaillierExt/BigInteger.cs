@@ -2432,6 +2432,29 @@ public class BigInteger
         return result;
     }
 
+    /// <summary>
+    /// Generates a positive BigInteger that is probably prime (secured version)
+    /// </summary>
+    /// <param name="bits">Number of bit</param>
+    /// <param name="confidence">Number of chosen bases</param>
+    /// <param name="rand">RNGCryptoServiceProvider object</param>
+    /// <returns>A probably prime number</returns>
+    public static BigInteger genPseudoPrime(int bits, int confidence, RNGCryptoServiceProvider rand)
+    {
+        BigInteger result = new BigInteger();
+        bool done = false;
+
+        while (!done)
+        {
+            result.genRandomBits(bits, rand);
+            result.data[0] |= 0x01;		// make it odd
+
+            // prime test
+            done = result.isProbablePrime(confidence);
+        }
+        return result;
+    }
+
 
     /// <summary>
     /// Generates a random number with the specified number of bits such that gcd(number, this) = 1
