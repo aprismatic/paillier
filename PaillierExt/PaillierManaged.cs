@@ -54,7 +54,7 @@ namespace PaillierExt
         }
 
         // TODO: check again for Miu
-        // p_key_strength in normal case is passed in by keysizevalue, which is 1024
+        // p_key_strength in normal case is passed in by keysizevalue, which is 102
         private void CreateKeyPair(int p_key_strength)
         {
             var x_random_generator = new Random(); //TODO: before release switch to Cryptographic RNG
@@ -74,6 +74,12 @@ namespace PaillierExt
             // g = n+1 (simpler variant)
             //o_key_struct.G = o_key_struct.N + 1;
             var temp = new BigInteger();
+            using(RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider()) //release after use
+            {
+                byte[] randomByte = new byte[256];  //256 bytes = 2048 bits
+                rng.GetBytes(randomByte);
+                temp.setData(randomByte);
+            }
             temp.genRandomBits(2048, x_random_generator);               //Nsquare has 2048 bits
             o_key_struct.G = temp % (o_key_struct.N * o_key_struct.N);  //to make sure g is in Z(Nsquare)
             //TODO: research if this is necessary, see below
