@@ -62,7 +62,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BigInteger.cs" />
     <Compile Include="Paillier.cs" />
     <Compile Include="PaillierAbstractCipher.cs" />
     <Compile Include="PaillierDecryptor.cs" />

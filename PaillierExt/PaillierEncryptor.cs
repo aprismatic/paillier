@@ -8,17 +8,18 @@
  ************************************************************************************/
 
 using System;
+using System.Security.Cryptography;
 
 namespace PaillierExt
 {
     public class PaillierEncryptor : PaillierAbstractCipher
     {
-        Random o_random;
+        RNGCryptoServiceProvider o_random;
 
         public PaillierEncryptor(PaillierKeyStruct p_struct)
             : base(p_struct)
         {
-            o_random = new Random();
+            o_random = new RNGCryptoServiceProvider();
         }
 
         // TODO: check again for encryption
