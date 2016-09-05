@@ -54,7 +54,7 @@ namespace PaillierExt
         }
 
         // TODO: check again for Miu
-        // p_key_strength in normal case is passed in by keysizevalue, which is 102
+        // p_key_strength in normal case is passed in by keysizevalue, which is 1024
         private void CreateKeyPair(int p_key_strength)
         {
             // create the large prime number, p and q
