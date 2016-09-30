@@ -59,9 +59,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\PaillierExt.Homomorphism\PaillierExt.Homomorphism.csproj">
       <Project>{ee2d4d0a-a0ea-484c-9787-065086c4aca0}</Project>
       <Name>PaillierExt.Homomorphism</Name>
@@ -70,6 +67,9 @@
       <Project>{75fbbb79-ed7c-4733-8b21-957bfab6ba67}</Project>
       <Name>PaillierExt</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
