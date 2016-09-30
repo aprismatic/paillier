@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 namespace PaillierTests
 {
     [TestClass]
-    public class UnitTest1
+    public class PaillierEncryptionTests
     {
         [TestMethod]
         public void TestZero()
@@ -31,10 +31,10 @@ namespace PaillierTests
                 var z_enc = encryptAlgorithm.EncryptData(z.getBytes());
                 var z_dec = decryptAlgorithm.DecryptData(z_enc);
 
-                for(int i = 0; i < z_dec.Length; i++)
-                {
-                    Assert.AreEqual(z_dec[i], 0);
-                }
+                var zero_array = new byte[z_dec.Length];
+                Array.Clear(zero_array, 0, zero_array.Length - 1);
+
+                CollectionAssert.AreEqual(zero_array, z_dec);
             }
         }
 
@@ -60,7 +60,7 @@ namespace PaillierTests
                 var z_enc = encryptAlgorithm.EncryptData(z.getBytes());
                 var z_dec = decryptAlgorithm.DecryptData(z_enc);
 
-                Assert.IsTrue(z.getBytes().SequenceEqual(z_dec));
+                CollectionAssert.AreEqual(z.getBytes(), z_dec);
             }
         }
 
@@ -93,7 +93,7 @@ namespace PaillierTests
 
                 var strip_zeros = StripTrailingZeros(candidatePlaintext, plaintext.Length);
 
-                Assert.IsTrue(plaintext.SequenceEqual(strip_zeros));
+                CollectionAssert.AreEqual(plaintext, strip_zeros);
             }
         }
 
