@@ -16,8 +16,10 @@ namespace PaillierTests
             Paillier algorithm = new PaillierManaged();
             algorithm.Padding = PaillierPaddingMode.LeadingZeros;
 
-            for (algorithm.KeySize = 384; algorithm.KeySize <= 544; algorithm.KeySize += 8)
+            for (int keySize = 384; keySize <= 1088; keySize += 8)
             {
+                algorithm.KeySize = keySize;
+
                 Paillier encryptAlgorithm = new PaillierManaged();
                 encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
 
@@ -44,7 +46,7 @@ namespace PaillierTests
             Paillier algorithm = new PaillierManaged();
             algorithm.Padding = PaillierPaddingMode.LeadingZeros;
 
-            for (algorithm.KeySize = 384; algorithm.KeySize <= 544; algorithm.KeySize += 8)
+            for (algorithm.KeySize = 384; algorithm.KeySize <= 1088; algorithm.KeySize += 8)
             {
                 Paillier encryptAlgorithm = new PaillierManaged();
                 encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
@@ -74,7 +76,7 @@ namespace PaillierTests
 
             Paillier algorithm = new PaillierManaged();
 
-            for (int keySize = 384; keySize <= 544; keySize += 8)
+            for (int keySize = 384; keySize <= 1088; keySize += 8)
             {
                 algorithm.KeySize = keySize;
                 algorithm.Padding = padding;
@@ -98,7 +100,7 @@ namespace PaillierTests
         [TestMethod]
         public void TestAddition_Batchs()
         {
-            var iteration = 40;
+            var iteration = 20;
 
             for (var i = 0; i < iteration; i++)
             {
