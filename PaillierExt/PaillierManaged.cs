@@ -179,9 +179,10 @@ namespace PaillierExt
             }
 
             // encrypt the data
-            PaillierEncryptor x_enc = new PaillierEncryptor(o_key_struct);
-
-            return x_enc.ProcessData(p_data);
+            using (PaillierEncryptor x_enc = new PaillierEncryptor(o_key_struct))
+            { 
+                return x_enc.ProcessData(p_data);
+            }
         }
 
         public override byte[] DecryptData(byte[] p_data)

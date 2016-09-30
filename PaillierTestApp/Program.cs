@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 
@@ -12,10 +13,11 @@ public class Test
 {
     public static void Main()
     {
-        TestTextEncryption();
-        TestAddition_Batch();
-        //PerformanceTest();
-        TestZero();
+        //TestTextEncryption();
+        //TestAddition_Batch();
+        PerformanceTest();
+        //TestZero();
+        //TestRandomBI();
     }
 
     private static void TestZero()
@@ -33,6 +35,61 @@ public class Test
         var z = new BigInteger(0);
 
         var z_enc = encryptAlgorithm.EncryptData(z.getBytes());
+
+        for (int i = 0; i < z_enc.Length; i++)
+        {
+            Console.Write(z_enc[i]);
+        }
+        Console.WriteLine();
+
+        var z_dec = decryptAlgorithm.DecryptData(z_enc);
+
+        for (int i = 0; i < z_dec.Length; i++)
+        {
+            Console.Write(z_dec[i]);
+        }
+        Console.WriteLine();
+    }
+
+    public static void TestRandomBI()
+    {
+        // To inspect the output, no idea why random number of zeroes appear in between decrypted bytes
+        // The original bytes and decrypted bytes are the same without zeroes
+        // Run several times, the appearance of zeroes seems unpredictale
+        Paillier algorithm = new PaillierManaged();
+        algorithm.Padding = PaillierPaddingMode.LeadingZeros;
+
+        algorithm.KeySize = 384;
+        Paillier encryptAlgorithm = new PaillierManaged();
+        encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
+
+        Paillier decryptAlgorithm = new PaillierManaged();
+        decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
+
+        var z = new BigInteger();
+        var randomBit = new Random().Next(1, 2241);
+        z.genRandomBits(randomBit, new RNGCryptoServiceProvider());
+
+        var z_enc = encryptAlgorithm.EncryptData(z.getBytes());
+        var z_dec = decryptAlgorithm.DecryptData(z_enc);
+
+        for (int i = 0; i < z.getBytes().Length; i++)
+        {
+            Console.Write(z.getBytes()[i]);
+        }
+        Console.WriteLine();
+        int zeroCounter = z_dec.Length - z.getBytes().Length;
+        for (int i = 0; i < z_dec.Length; i++)
+        {
+            Console.Write(z_dec[i]);
+        }
+        Console.WriteLine();
+        Console.WriteLine
+            ("Number of zero: {0}" +
+            "\nNumber of original bytes: {1}" + 
+            "\nNumber of decrypted bytes: {2}" +
+            "\nNumber of bits used to gen random bytes: {3}"
+            ,zeroCounter, z.getBytes().Length, z_dec.Length, randomBit);
     }
 
     public static string PrettifyXML(string XML)

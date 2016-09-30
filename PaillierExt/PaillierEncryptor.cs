@@ -12,7 +12,7 @@ using System.Security.Cryptography;
 
 namespace PaillierExt
 {
-    public class PaillierEncryptor : PaillierAbstractCipher
+    public class PaillierEncryptor : PaillierAbstractCipher, IDisposable
     {
         RNGCryptoServiceProvider o_random;
 
@@ -78,6 +78,11 @@ namespace PaillierExt
             }
 
             return p_block;
+        }
+
+        public void Dispose()
+        {
+            o_random.Dispose();
         }
     }
 }
