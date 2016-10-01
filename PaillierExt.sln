@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaillierExt", "PaillierExt\PaillierExt.csproj", "{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -11,6 +11,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaillierTestApp", "PaillierTestApp\PaillierTestApp.csproj", "{DCC3CA0D-A20C-496A-AC9A-3D78E6C6F434}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaillierExt.Homomorphism", "PaillierExt.Homomorphism\PaillierExt.Homomorphism.csproj", "{EE2D4D0A-A0EA-484C-9787-065086C4ACA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaillierTests", "PaillierTests\PaillierTests.csproj", "{52BCA4DA-A181-4DBA-9637-4B462479D3BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,14 @@ Global
 		{EE2D4D0A-A0EA-484C-9787-065086C4ACA0}.Deploy PExt|Any CPU.ActiveCfg = Release|Any CPU
 		{EE2D4D0A-A0EA-484C-9787-065086C4ACA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE2D4D0A-A0EA-484C-9787-065086C4ACA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Deploy PExt.Hom|Any CPU.ActiveCfg = Debug|Any CPU
+		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Deploy PExt.Hom|Any CPU.Build.0 = Debug|Any CPU
+		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Deploy PExt|Any CPU.ActiveCfg = Debug|Any CPU
+		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Deploy PExt|Any CPU.Build.0 = Debug|Any CPU
+		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

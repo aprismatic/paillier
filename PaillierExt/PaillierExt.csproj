@@ -46,8 +46,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BigInteger, Version=1.0.6.32395, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\BigInteger.1.0.6.32395\lib\net20\BigInteger.dll</HintPath>
+    <Reference Include="BigInteger, Version=1.0.6.32405, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BigInteger.1.0.6.32405\lib\net20\BigInteger.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PaillierExt.Homomorphism, Version=0.9.3.32453, Culture=neutral, processorArchitecture=MSIL">
@@ -72,7 +72,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="PaillierExt.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
