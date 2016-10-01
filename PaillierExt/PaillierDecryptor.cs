@@ -58,13 +58,13 @@ namespace PaillierExt
 
         protected byte[] UnpadPlaintextBlock(byte[] p_block)
         {
-            byte[] x_res = new byte[0];
+            var x_res = new byte[0];
 
             switch (o_key_struct.Padding)
             {
                 // removing all the leading zeros
                 case PaillierPaddingMode.LeadingZeros:
-                    int i = 0;
+                    var i = 0;
                     for (; i < o_plaintext_blocksize; i++)
                     {
                         if (p_block[i] != 0)

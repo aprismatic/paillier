@@ -52,7 +52,7 @@ namespace PaillierExt
                     // copy the block and create the big integer
                     Array.Copy(p_data, i * o_block_size, x_block, 0, o_block_size);
                     // process the block
-                    byte[] x_result = ProcessDataBlock(x_block);
+                    var x_result = ProcessDataBlock(x_block);
                     // write the processed data into the stream
                     x_stream.Write(x_result, 0, x_result.Length);
                 }

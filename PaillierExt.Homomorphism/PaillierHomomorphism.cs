@@ -8,8 +8,8 @@
             var B = new BigInteger(p_second);
             var N = new BigInteger(p_N);
 
-            BigInteger bi_res = A * B % (N * N);
-            byte[] res = bi_res.getBytes();
+            var bi_res = A * B % (N * N);
+            var res = bi_res.getBytes();
             return res;
         }
     }
