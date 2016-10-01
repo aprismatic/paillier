@@ -57,7 +57,7 @@ namespace PaillierExt
             return x_sb.ToString();
         }
 
-        public override void FromXmlString(String p_string)
+        public override void FromXmlString(string p_string)
         {
             // create the params that we will use as the result
             var x_params = new PaillierParameters();

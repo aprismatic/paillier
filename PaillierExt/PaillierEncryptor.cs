@@ -14,7 +14,7 @@ namespace PaillierExt
 {
     public class PaillierEncryptor : PaillierAbstractCipher, IDisposable
     {
-        RNGCryptoServiceProvider o_random;
+        private RNGCryptoServiceProvider o_random;
 
         public PaillierEncryptor(PaillierKeyStruct p_struct)
             : base(p_struct)
@@ -57,7 +57,7 @@ namespace PaillierExt
         {
             if (p_block.Length < o_block_size)
             {
-                byte[] x_padded = new byte[o_block_size];
+                var x_padded = new byte[o_block_size];
 
                 switch (o_key_struct.Padding)
                 {
