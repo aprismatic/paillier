@@ -1,4 +1,6 @@
-﻿namespace PaillierExt.Homomorphism
+﻿using System.Collections.Generic;
+
+namespace PaillierExt.Homomorphism
 {
     public static class PaillierHomomorphism
     {

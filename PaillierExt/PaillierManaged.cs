@@ -200,9 +200,6 @@ namespace PaillierExt
             throw new NotImplementedException();
         }
 
-        // ********** SPECIAL ************//
-        // p_first and p_second are already encrypted
-        // return homomorphic sum of the 2 plaintext
         public override byte[] Addition(byte[] p_first, byte[] p_second)
         {
             var blocksize = o_key_struct.getCiphertextBlocksize();

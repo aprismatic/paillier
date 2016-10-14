@@ -35,12 +35,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BigInteger, Version=1.0.6.32405, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\BigInteger.1.0.6.32405\lib\net20\BigInteger.dll</HintPath>
+    <Reference Include="BigInteger, Version=1.0.6.32409, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BigInteger.1.0.6.32409\lib\net20\BigInteger.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -59,10 +58,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PaillierExt.Homomorphism\PaillierExt.Homomorphism.csproj">
-      <Project>{ee2d4d0a-a0ea-484c-9787-065086c4aca0}</Project>
-      <Name>PaillierExt.Homomorphism</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PaillierExt\PaillierExt.csproj">
       <Project>{75fbbb79-ed7c-4733-8b21-957bfab6ba67}</Project>
       <Name>PaillierExt</Name>
