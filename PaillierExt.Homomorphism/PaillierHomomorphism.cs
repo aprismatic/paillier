@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Numerics;
 
 namespace PaillierExt.Homomorphism
 {
@@ -11,7 +11,7 @@ namespace PaillierExt.Homomorphism
             var N = new BigInteger(p_N);
 
             var bi_res = A * B % (N * N);
-            var res = bi_res.getBytes();
+            var res = bi_res.ToByteArray();
             return res;
         }
     }

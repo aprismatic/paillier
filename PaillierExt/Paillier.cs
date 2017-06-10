@@ -18,7 +18,8 @@ namespace PaillierExt
     {
         ANSIX923,
         LeadingZeros,
-        Zeros
+        TrailingZeros,
+        BigIntegerPadding
     };
 
     public abstract class Paillier : AsymmetricAlgorithm

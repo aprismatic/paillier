@@ -3,10 +3,12 @@ using PaillierExt;
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Numerics;
+using BigIntegerExt;
 
 namespace PaillierTests
 {
-    [TestClass]
+        [TestClass]
     public class PaillierEncryptionTests
     {
         [TestMethod]
@@ -16,7 +18,7 @@ namespace PaillierTests
             for (var keySize = 384; keySize <= 544; keySize += 8)
             {
                 Paillier algorithm = new PaillierManaged();
-                algorithm.Padding = PaillierPaddingMode.LeadingZeros;
+                algorithm.Padding = PaillierPaddingMode.BigIntegerPadding;
                 algorithm.KeySize = keySize;
 
                 Paillier encryptAlgorithm = new PaillierManaged();
@@ -26,7 +28,7 @@ namespace PaillierTests
                 decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
 
                 var z = new BigInteger(0);
-                var z_bytes = z.getBytes();
+                var z_bytes = z.ToByteArray();
 
                 var z_enc_bytes = encryptAlgorithm.EncryptData(z_bytes);
                 var z_dec_bytes = decryptAlgorithm.DecryptData(z_enc_bytes);
@@ -42,12 +44,13 @@ namespace PaillierTests
         {
             var iterations = 10;
             var rnd = new Random();
+            var rnd2 = new RNGCryptoServiceProvider();
 
             // TODO: BigInteger can't hold enough digits for keys larger than 544 bits
             for (var keySize = 384; keySize <= 544; keySize += 8)
             {
                 Paillier algorithm = new PaillierManaged();
-                algorithm.Padding = PaillierPaddingMode.LeadingZeros;
+                algorithm.Padding = PaillierPaddingMode.BigIntegerPadding;
                 algorithm.KeySize = keySize;
 
                 Paillier encryptAlgorithm = new PaillierManaged();
@@ -61,9 +64,9 @@ namespace PaillierTests
                 for (var i = 0; i < iterations; i++)
                 {
                     // Plaintext that is bigger than one block requires different padding (e.g. ANSIX923 or PKCS97)
-                    z.genRandomBits(rnd.Next(1, (algorithm as PaillierManaged).KeyStruct.getPlaintextBlocksize() * 8), rnd);
+                    z = z.GenRandomBits(rnd.Next(1, (algorithm as PaillierManaged).KeyStruct.getPlaintextBlocksize() * 8), rnd2);
 
-                    var z_bytes = z.getBytes();
+                    var z_bytes = z.ToByteArray();
 
                     var z_enc_bytes = encryptAlgorithm.EncryptData(z_bytes);
                     var z_dec_bytes = decryptAlgorithm.DecryptData(z_enc_bytes);
@@ -84,7 +87,7 @@ namespace PaillierTests
             for (var keySize = 384; keySize <= 1088; keySize += 8)
             {
                 Paillier algorithm = new PaillierManaged();
-                algorithm.Padding = PaillierPaddingMode.Zeros;
+                algorithm.Padding = PaillierPaddingMode.BigIntegerPadding;
                 algorithm.KeySize = keySize;
 
                 Paillier encryptAlgorithm = new PaillierManaged();
@@ -121,11 +124,11 @@ namespace PaillierTests
 
                 for (var i = 0; i < iterations; i++)
                 {
-                    var A = new BigInteger(random.Next());
-                    var B = new BigInteger(random.Next());
+                    var A = new BigInteger(129);
+                    var B = new BigInteger(128);
 
-                    var A_bytes = A.getBytes();
-                    var B_bytes = B.getBytes();
+                    var A_bytes = A.ToByteArray();
+                    var B_bytes = B.ToByteArray();
 
                     //encrypt A and B
                     var A_enc_bytes = encryptAlgorithm.EncryptData(A_bytes);
@@ -137,7 +140,7 @@ namespace PaillierTests
 
                     // convert to BigInteger
                     var C_dec = new BigInteger(C_dec_bytes);
-
+                    var Byte = (A + B).ToByteArray();
                     Assert.AreEqual(C_dec, A + B);
                 }
             }

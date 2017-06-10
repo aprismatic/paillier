@@ -46,16 +46,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BigInteger, Version=1.0.6.32409, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\BigInteger.1.0.6.32409\lib\net20\BigInteger.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="PaillierExt.Homomorphism, Version=0.9.3.32453, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PaillierExt.Homomorphism.0.9.3.32453\lib\net40\PaillierExt.Homomorphism.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="BigIntegerExt">
+      <HintPath>..\..\BigIntegerExt\BigIntegerExt\bin\Debug\BigIntegerExt.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +67,15 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="PaillierExt.nuspec" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PaillierExt.Homomorphism\PaillierExt.Homomorphism.csproj">
+      <Project>{ea70f49c-0459-4c66-9539-c84faf1e60a9}</Project>
+      <Name>PaillierExt.Homomorphism</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

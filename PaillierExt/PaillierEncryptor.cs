@@ -9,6 +9,9 @@
 
 using System;
 using System.Security.Cryptography;
+using System.Numerics;
+using BigIntegerExt;
+
 
 namespace PaillierExt
 {
@@ -27,30 +30,29 @@ namespace PaillierExt
         {
             // generate random R
             var R = new BigInteger();
-            R.genRandomBits(o_key_struct.N.bitCount() - 1, o_random); // R's bitlength is n-1 so that r is within Zn
+            R = R.GenRandomBits(o_key_struct.N.BitCount() - 1, o_random); // R's bitlength is n-1 so that r is within Zn
+
 
             // ciphertext c = g^m * r^n mod n^2
             var Nsquare = o_key_struct.N * o_key_struct.N;
-            var C = (o_key_struct.G.modPow(new BigInteger(p_block), Nsquare)
-                           * R.modPow(o_key_struct.N, Nsquare)) % Nsquare;
+            var C = (BigInteger.ModPow(o_key_struct.G, new BigInteger(p_block), Nsquare)
+                           * BigInteger.ModPow(R, o_key_struct.N, Nsquare)) % Nsquare;
+
+
 
             // create an array to contain the ciphertext
-            var x_result = new byte[o_ciphertext_blocksize];
-            var c_bytes = C.getBytes();
+            var x_result = new byte[o_ciphertext_blocksize + 2];
+            var c_bytes = C.ToByteArray();
 
             // copy c_bytes into x_result
-            Array.Copy(c_bytes, 0, x_result, o_ciphertext_blocksize - c_bytes.Length, c_bytes.Length);
-
+            Array.Copy(c_bytes, 0, x_result, 0, c_bytes.Length);
             // return result array
             return x_result;
         }
 
         protected override byte[] ProcessFinalDataBlock(byte[] p_final_block)
         {
-            if (!(p_final_block.Length > 0))
-                return new byte[0];     //return empty block
-
-            return ProcessDataBlock(PadPlaintextBlock(p_final_block));
+            return (p_final_block.Length > 0) ? ProcessDataBlock(PadPlaintextBlock(p_final_block)) : new byte[0];
         }
 
         protected byte[] PadPlaintextBlock(byte[] p_block)
@@ -62,7 +64,7 @@ namespace PaillierExt
                 switch (o_key_struct.Padding)
                 {
                     // trailing zeros
-                    case PaillierPaddingMode.Zeros:
+                    case PaillierPaddingMode.TrailingZeros:
                         Array.Copy(p_block, 0, x_padded, 0, p_block.Length);
                         break;
 
@@ -72,6 +74,21 @@ namespace PaillierExt
 
                     case PaillierPaddingMode.ANSIX923:
                         throw new NotImplementedException();
+                        break;
+
+                    case PaillierPaddingMode.BigIntegerPadding:
+                        Array.Copy(p_block, 0, x_padded, 0, p_block.Length);
+                        if ((p_block[p_block.Length - 1] & 0b1000_0000) == 1)
+                        {
+                            for (var i = p_block.Length; i < x_padded.Length; i++)
+                            {
+                                x_padded[i] = 0xFF;
+                            }
+                        }
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
 
                 return x_padded;
