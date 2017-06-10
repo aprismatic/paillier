@@ -46,7 +46,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BigIntegerExt">
+    <Reference Include="BigIntegerExt, Version=0.1.0.3, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\BigIntegerExt.0.1.0.3\lib\net40\BigIntegerExt.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -65,6 +66,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Fakes Include="Fakes\BigIntegerExt.fakes" />
     <None Include="packages.config" />
     <None Include="PaillierExt.nuspec" />
   </ItemGroup>
