@@ -39,7 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BigIntegerExt">
-      <HintPath>..\..\BigIntegerExt\BigIntegerExt\bin\Debug\BigIntegerExt.dll</HintPath>
+      <HintPath>..\packages\BigIntegerExt.0.1.0.3\lib\net40\BigIntegerExt.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
