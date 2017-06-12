@@ -8,9 +8,11 @@ assembly_info:
 branches:
   only:
     - master
+before_build:
+  - nuget restore
 build:
   publish_nuget: true
-  verbosity: detailed
+  verbosity: normal
 configuration: Release
 environment:
   AppVeyorAPIToken:
