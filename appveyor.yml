@@ -10,7 +10,7 @@ branches:
     - master
 build:
   publish_nuget: true
-  verbosity: minimal
+  verbosity: detailed
 configuration: Release
 environment:
   AppVeyorAPIToken:
