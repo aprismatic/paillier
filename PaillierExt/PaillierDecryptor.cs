@@ -84,7 +84,6 @@ namespace PaillierExt
 
                 case PaillierPaddingMode.ANSIX923:
                     throw new NotImplementedException();
-                    break;
 
                 case PaillierPaddingMode.BigIntegerPadding:
                     var k = p_block.Length - 1;

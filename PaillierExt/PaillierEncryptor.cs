@@ -74,7 +74,6 @@ namespace PaillierExt
 
                     case PaillierPaddingMode.ANSIX923:
                         throw new NotImplementedException();
-                        break;
 
                     case PaillierPaddingMode.BigIntegerPadding:
                         Array.Copy(p_block, 0, x_padded, 0, p_block.Length);
