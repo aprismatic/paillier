@@ -6,6 +6,8 @@
   
  [1] The MIT License (MIT), website, (http://opensource.org/licenses/MIT)
  ************************************************************************************/
+using System.Numerics;
+using BigIntegerExt;
 
 namespace PaillierExt
 {
@@ -19,13 +21,13 @@ namespace PaillierExt
 
         public int getPlaintextBlocksize()
         {
-            return (N.bitCount() - 1) / 8;
+            return (N.BitCount() - 1) / 8;
         }
 
         // TODO: check again ciphertext and plaintext block size
         public int getCiphertextBlocksize()
         {
-            return ((N.bitCount() + 7) / 8) * 2;
+            return ((N.BitCount() + 7) / 8) * 2;
         }
     }
 }

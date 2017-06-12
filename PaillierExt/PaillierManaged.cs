@@ -9,6 +9,8 @@
 
 using System;
 using System.Security.Cryptography;
+using System.Numerics;
+using BigIntegerExt;
 
 namespace PaillierExt
 {
@@ -50,8 +52,11 @@ namespace PaillierExt
             // public static BigInteger genPseudoPrime(int bits, int confidence, RNGCryptoServiceProvider rand)
             using (var x_random_generator = new RNGCryptoServiceProvider())
             {
-                var p = BigInteger.genPseudoPrime(p_key_strength / 2, 16, x_random_generator);
-                var q = BigInteger.genPseudoPrime(p_key_strength / 2, 16, x_random_generator);
+                var p = new BigInteger();
+                var q = new BigInteger();
+
+                p = p.GenPseudoPrime(p_key_strength / 2, 16, x_random_generator);
+                q = q.GenPseudoPrime(p_key_strength / 2, 16, x_random_generator);
 
                 // compute N
                 // n = p*q
@@ -63,7 +68,7 @@ namespace PaillierExt
                 //o_key_struct.G = o_key_struct.N + 1;
                 var temp = new BigInteger();
 
-                temp.genRandomBits(2048, x_random_generator);
+                temp = temp.GenRandomBits(2048, x_random_generator);
 
                 o_key_struct.G = temp % (o_key_struct.N * o_key_struct.N);  //to make sure g is in Z(Nsquare)
                                                                             //TODO: research if this is necessary, see below
@@ -73,12 +78,14 @@ namespace PaillierExt
                 // lambda = lcm(p-1, q-1) = (p-1)*(q-1)/gcd(p-1, q-1)
                 // or simpler variant, lambda = (p-1)(q-1), since p and q have same length
                 //o_key_struct.Lambda = (p - 1) * (q - 1);
-                o_key_struct.Lambda = (p - 1) * (q - 1) / (p - 1).gcd(q - 1);
+                o_key_struct.Lambda = (p - 1) * (q - 1) / BigInteger.GreatestCommonDivisor(( (p - 1)), (q - 1));
 
                 // Miu =  lambda**-1 (mod n)
                 //o_key_struct.Miu = o_key_struct.Lambda.modInverse(o_key_struct.N);
-                o_key_struct.Miu = ((o_key_struct.G.modPow(o_key_struct.Lambda, o_key_struct.N * o_key_struct.N) - 1)
-                            / o_key_struct.N).modInverse(o_key_struct.N);
+                o_key_struct.Miu = ((BigInteger.ModPow(o_key_struct.G, o_key_struct.Lambda, o_key_struct.N * o_key_struct.N) - 1)
+                            / o_key_struct.N).ModInverse(o_key_struct.N);
+                
+                
 
                 o_key_struct.Padding = this.Padding;
             }
@@ -123,7 +130,7 @@ namespace PaillierExt
             }
 
             // set the length of the key based on the import
-            KeySizeValue = o_key_struct.N.bitCount();
+            KeySizeValue = o_key_struct.N.BitCount();
         }
 
         public override PaillierParameters ExportParameters(bool p_include_private_params)
@@ -137,16 +144,16 @@ namespace PaillierExt
             // create the parameter set and set the public values of the parameters
             var x_params = new PaillierParameters
             {
-                N = o_key_struct.N.getBytes(),
-                G = o_key_struct.G.getBytes(),
+                N = o_key_struct.N.ToByteArray(),
+                G = o_key_struct.G.ToByteArray(),
                 Padding = o_key_struct.Padding
             };
 
             // if required, include the private value, X
             if (p_include_private_params)
             {
-                x_params.Lambda = o_key_struct.Lambda.getBytes();
-                x_params.Miu = o_key_struct.Miu.getBytes();
+                x_params.Lambda = o_key_struct.Lambda.ToByteArray();
+                x_params.Miu = o_key_struct.Miu.ToByteArray();
             }
             else
             {
@@ -202,7 +209,7 @@ namespace PaillierExt
 
         public override byte[] Addition(byte[] p_first, byte[] p_second)
         {
-            var blocksize = o_key_struct.getCiphertextBlocksize();
+            var blocksize = o_key_struct.getCiphertextBlocksize() + 2;
 
             if (p_first.Length != blocksize)
             {
@@ -213,7 +220,7 @@ namespace PaillierExt
                 throw new ArgumentException("Ciphertext to multiply should be exactly one block long.", nameof(p_second));
             }
 
-            return Homomorphism.PaillierHomomorphism.Addition(p_first, p_second, o_key_struct.N.getBytes());
+            return Homomorphism.PaillierHomomorphism.Addition(p_first, p_second, o_key_struct.N.ToByteArray());
         }
     }
 }
