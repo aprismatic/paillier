@@ -66,7 +66,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Fakes Include="Fakes\BigIntegerExt.fakes" />
     <None Include="packages.config" />
     <None Include="PaillierExt.nuspec" />
   </ItemGroup>
