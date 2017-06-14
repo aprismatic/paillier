@@ -1,9 +1,9 @@
 /************************************************************************************
  This is an implementation of the Paillier encryption scheme with support for
  homomorphic addition.
- 
+
  This library is provided as-is and is covered by the MIT License [1].
-  
+
  [1] The MIT License (MIT), website, (http://opensource.org/licenses/MIT)
  ************************************************************************************/
 
@@ -18,8 +18,7 @@ namespace PaillierExt
         public PaillierDecryptor(PaillierKeyStruct p_struct)
             : base(p_struct)
         {
-            // set the default block size to be ciphertext
-            o_block_size = o_ciphertext_blocksize + 2;
+            o_block_size = o_ciphertext_blocksize;
         }
 
         //TODO: check again for decryption
@@ -27,23 +26,19 @@ namespace PaillierExt
         {
             var block = new BigInteger(p_block);
 
-
             // calculate M
-            // c array is in nsquare bytes
             // m = (c^lambda(mod nsquare) - 1) / n * miu (mod n)
             var m = (BigInteger.ModPow(block, o_key_struct.Lambda, o_key_struct.N * o_key_struct.N) - 1) /
                             o_key_struct.N * o_key_struct.Miu % o_key_struct.N;
             var x_m_bytes = m.ToByteArray();
 
-            // we may end up with results which are short some leading
-            // bytes - add these are required 
+            // we may end up with results which are short some trailing zeros
             if (x_m_bytes.Length < o_plaintext_blocksize)
             {
                 var x_full_result = new byte[o_plaintext_blocksize];
                 Array.Copy(x_m_bytes, 0, x_full_result, 0, x_m_bytes.Length);
                 x_m_bytes = x_full_result;
             }
-
 
             return x_m_bytes;
         }
@@ -59,7 +54,6 @@ namespace PaillierExt
 
             switch (o_key_struct.Padding)
             {
-                // removing all the leading zeros
                 case PaillierPaddingMode.LeadingZeros:
                     var i = 0;
                     for (; i < p_block.Length; i++)
@@ -67,11 +61,9 @@ namespace PaillierExt
                         if (p_block[i] != 0)
                             break;
                     }
-                    x_res = p_block.Skip(i).ToArray(); // TODO: Consider rewriting
+                    x_res = p_block.Skip(i).ToArray(); // TODO: Consider rewriting without LINQ
                     break;
 
-                // we can't determine which bytes are padding and which are meaningful
-                // thus we return the block as is
                 case PaillierPaddingMode.TrailingZeros:
                     var j = p_block.Length - 1;
                     for (; j >= 0; j--)
@@ -79,7 +71,7 @@ namespace PaillierExt
                         if (p_block[j] != 0)
                             break;
                     }
-                    x_res = p_block.Take(j + 1).ToArray();
+                    x_res = p_block.Take(j + 1).ToArray(); // TODO: Consider rewriting without LINQ
                     break;
 
                 case PaillierPaddingMode.ANSIX923:
@@ -118,7 +110,7 @@ namespace PaillierExt
                             }
                         }
                     }
-                    x_res = p_block.Take(k + 1).ToArray();
+                    x_res = p_block.Take(k + 1).ToArray(); // TODO: Consider rewriting without LINQ
                     break;
 
                 // unlikely to happen

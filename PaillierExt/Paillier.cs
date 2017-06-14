@@ -1,9 +1,9 @@
 /************************************************************************************
  This is an implementation of the Paillier encryption scheme with support for
  homomorphic addition.
- 
+
  This library is provided as-is and is covered by the MIT License [1].
-  
+
  [1] The MIT License (MIT), website, (http://opensource.org/licenses/MIT)
  ************************************************************************************/
 
@@ -20,7 +20,7 @@ namespace PaillierExt
         LeadingZeros,
         TrailingZeros,
         BigIntegerPadding
-    };
+    }
 
     public abstract class Paillier : AsymmetricAlgorithm
     {
@@ -42,7 +42,6 @@ namespace PaillierExt
 
             x_sb.Append("<PaillierKeyValue>");
 
-            // add the public elements from the parameters
             x_sb.Append("<N>" + Convert.ToBase64String(x_params.N) + "</N>");
             x_sb.Append("<G>" + Convert.ToBase64String(x_params.G) + "</G>");
             x_sb.Append("<Padding>" + x_params.Padding.ToString() + "</Padding>");
@@ -60,16 +59,12 @@ namespace PaillierExt
 
         public override void FromXmlString(string p_string)
         {
-            // create the params that we will use as the result
             var x_params = new PaillierParameters();
 
-            // create a text reader using a string reader
             using (var x_reader = new XmlTextReader(new System.IO.StringReader(p_string)))
             {
-                // run through the elements in the xml string
                 while (x_reader.Read())
                 {
-                    // we are only interested in processing start nodes
                     if (true || x_reader.IsStartElement())
                     {
                         switch (x_reader.Name)

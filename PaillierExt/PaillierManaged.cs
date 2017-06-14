@@ -1,9 +1,9 @@
 ﻿/************************************************************************************
  This is an implementation of the Paillier encryption scheme with support for
  homomorphic addition.
- 
+
  This library is provided as-is and is covered by the MIT License [1].
-  
+
  [1] The MIT License (MIT), website, (http://opensource.org/licenses/MIT)
  ************************************************************************************/
 
@@ -44,12 +44,10 @@ namespace PaillierExt
         public override string KeyExchangeAlgorithm => "Paillier";
 
         // TODO: check again for Miu
-        // p_key_strength in normal case is passed in by keysizevalue, which is 1024
         private void CreateKeyPair(int p_key_strength)
         {
             // create the large prime number, p and q
             // p and q are assumed to have the same bit length (512 bit each, so that N is 1024)
-            // public static BigInteger genPseudoPrime(int bits, int confidence, RNGCryptoServiceProvider rand)
             using (var x_random_generator = new RNGCryptoServiceProvider())
             {
                 var p = new BigInteger();
@@ -78,16 +76,14 @@ namespace PaillierExt
                 // lambda = lcm(p-1, q-1) = (p-1)*(q-1)/gcd(p-1, q-1)
                 // or simpler variant, lambda = (p-1)(q-1), since p and q have same length
                 //o_key_struct.Lambda = (p - 1) * (q - 1);
-                o_key_struct.Lambda = (p - 1) * (q - 1) / BigInteger.GreatestCommonDivisor(( (p - 1)), (q - 1));
+                o_key_struct.Lambda = (p - 1) * (q - 1) / BigInteger.GreatestCommonDivisor(p - 1, q - 1);
 
                 // Miu =  lambda**-1 (mod n)
                 //o_key_struct.Miu = o_key_struct.Lambda.modInverse(o_key_struct.N);
                 o_key_struct.Miu = ((BigInteger.ModPow(o_key_struct.G, o_key_struct.Lambda, o_key_struct.N * o_key_struct.N) - 1)
                             / o_key_struct.N).ModInverse(o_key_struct.N);
-                
-                
 
-                o_key_struct.Padding = this.Padding;
+                o_key_struct.Padding = Padding;
             }
         }
 
@@ -115,21 +111,19 @@ namespace PaillierExt
 
         public override void ImportParameters(PaillierParameters p_parameters)
         {
-            // obtain the  big integer values from the byte parameter values
             o_key_struct.N = new BigInteger(p_parameters.N);
             o_key_struct.G = new BigInteger(p_parameters.G);
             o_key_struct.Padding = p_parameters.Padding;
 
-            if ((p_parameters.Lambda != null)
-             && (p_parameters.Lambda.Length > 0)
-             && (p_parameters.Miu != null)
-             && (p_parameters.Miu.Length > 0))
+            if (p_parameters.Lambda != null
+             && p_parameters.Lambda.Length > 0
+             && p_parameters.Miu != null
+             && p_parameters.Miu.Length > 0)
             {
                 o_key_struct.Lambda = new BigInteger(p_parameters.Lambda);
                 o_key_struct.Miu = new BigInteger(p_parameters.Miu);
             }
 
-            // set the length of the key based on the import
             KeySizeValue = o_key_struct.N.BitCount();
         }
 
@@ -137,11 +131,9 @@ namespace PaillierExt
         {
             if (NeedToGenerateKey())
             {
-                // we need to create a new key before we can export 
                 CreateKeyPair(KeySizeValue);
             }
 
-            // create the parameter set and set the public values of the parameters
             var x_params = new PaillierParameters
             {
                 N = o_key_struct.N.ToByteArray(),
@@ -172,7 +164,6 @@ namespace PaillierExt
                 CreateKeyPair(KeySizeValue);
             }
 
-            // encrypt the data
             using (var x_enc = new PaillierEncryptor(o_key_struct))
             {
                 return x_enc.ProcessData(p_data);
@@ -186,7 +177,6 @@ namespace PaillierExt
                 CreateKeyPair(KeySizeValue);
             }
 
-            // encrypt the data
             var x_enc = new PaillierDecryptor(o_key_struct);
 
             return x_enc.ProcessData(p_data);
@@ -209,15 +199,15 @@ namespace PaillierExt
 
         public override byte[] Addition(byte[] p_first, byte[] p_second)
         {
-            var blocksize = o_key_struct.getCiphertextBlocksize() + 2;
+            var blocksize = o_key_struct.getCiphertextBlocksize();
 
             if (p_first.Length != blocksize)
             {
-                throw new ArgumentException("Ciphertext to multiply should be exactly one block long.", nameof(p_first));
+                throw new ArgumentException("Ciphertext to add should be exactly one block long.", nameof(p_first));
             }
             if (p_second.Length != blocksize)
             {
-                throw new ArgumentException("Ciphertext to multiply should be exactly one block long.", nameof(p_second));
+                throw new ArgumentException("Ciphertext to add should be exactly one block long.", nameof(p_second));
             }
 
             return Homomorphism.PaillierHomomorphism.Addition(p_first, p_second, o_key_struct.N.ToByteArray());

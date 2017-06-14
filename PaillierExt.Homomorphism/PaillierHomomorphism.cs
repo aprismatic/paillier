@@ -10,7 +10,7 @@ namespace PaillierExt.Homomorphism
             var B = new BigInteger(p_second);
             var N = new BigInteger(p_N);
 
-            var bi_res = A * B % (N * N);
+            var bi_res = (A * B) % (N * N);
             var res = bi_res.ToByteArray();
             return res;
         }

@@ -1,9 +1,9 @@
 /************************************************************************************
  This is an implementation of the Paillier encryption scheme with support for
  homomorphic addition.
- 
+
  This library is provided as-is and is covered by the MIT License [1].
-  
+
  [1] The MIT License (MIT), website, (http://opensource.org/licenses/MIT)
  ************************************************************************************/
 
@@ -21,14 +21,11 @@ namespace PaillierExt
 
         public PaillierAbstractCipher(PaillierKeyStruct p_key_struct)
         {
-            // set the key details
             o_key_struct = p_key_struct;
 
-            // calculate the blocksizes
             o_plaintext_blocksize = p_key_struct.getPlaintextBlocksize();
             o_ciphertext_blocksize = p_key_struct.getCiphertextBlocksize();
 
-            // set the default block for plaintext, which is suitable for encryption
             o_block_size = o_plaintext_blocksize;
         }
 
@@ -36,17 +33,13 @@ namespace PaillierExt
         {
             byte[] res;
 
-            // create a stream backed by a memory array
             using (var x_stream = new MemoryStream())
             {
-                // determine how many complete blocks there are
                 var x_complete_blocks = p_data.Length / o_block_size + (p_data.Length % o_block_size > 0 ? 1 : 0);
                 x_complete_blocks = Math.Max(x_complete_blocks - 1, 0);
 
-                // create an array which will hold a block
                 var x_block = new byte[o_block_size];
 
-                // run through and process the complete blocks
                 var i = 0;
                 for (; i < x_complete_blocks; i++)
                 {
@@ -57,17 +50,13 @@ namespace PaillierExt
                     x_stream.Write(x_result, 0, x_result.Length);
                 }
 
-                // process the final block
                 var x_final_block = new byte[p_data.Length - (x_complete_blocks * o_block_size)];
                 Array.Copy(p_data, i * o_block_size, x_final_block, 0, x_final_block.Length);
 
-                // process the final block
                 var x_final_result = ProcessFinalDataBlock(x_final_block);
 
-                // write the final data bytes into the stream
                 x_stream.Write(x_final_result, 0, x_final_result.Length);
 
-                // return the contents of the stream as a byte array
                 res = x_stream.ToArray();
             }
 

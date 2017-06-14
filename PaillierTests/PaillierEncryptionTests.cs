@@ -1,25 +1,26 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using BigIntegerExt;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PaillierExt;
 using System;
+using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
-using System.Numerics;
-using BigIntegerExt;
 
 namespace PaillierTests
 {
-        [TestClass]
+    [TestClass]
     public class PaillierEncryptionTests
     {
         [TestMethod]
         public void TestZero()
         {
-            // TODO: BigInteger can't hold enough digits for keys larger than 544 bits
-            for (var keySize = 384; keySize <= 544; keySize += 8)
+            for (var keySize = 384; keySize <= 1088; keySize += 8)
             {
-                Paillier algorithm = new PaillierManaged();
-                algorithm.Padding = PaillierPaddingMode.BigIntegerPadding;
-                algorithm.KeySize = keySize;
+                Paillier algorithm = new PaillierManaged
+                {
+                    Padding = PaillierPaddingMode.BigIntegerPadding,
+                    KeySize = keySize
+                };
 
                 Paillier encryptAlgorithm = new PaillierManaged();
                 encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
@@ -44,27 +45,28 @@ namespace PaillierTests
         {
             var iterations = 10;
             var rnd = new Random();
-            var rnd2 = new RNGCryptoServiceProvider();
+            var rng = new RNGCryptoServiceProvider();
 
-            // TODO: BigInteger can't hold enough digits for keys larger than 544 bits
-            for (var keySize = 384; keySize <= 544; keySize += 8)
+            for (var keySize = 384; keySize <= 1088; keySize += 8)
             {
-                Paillier algorithm = new PaillierManaged();
-                algorithm.Padding = PaillierPaddingMode.BigIntegerPadding;
-                algorithm.KeySize = keySize;
-
-                Paillier encryptAlgorithm = new PaillierManaged();
-                encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
-
-                Paillier decryptAlgorithm = new PaillierManaged();
-                decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
-
-                var z = new BigInteger();
-
                 for (var i = 0; i < iterations; i++)
                 {
+                    Paillier algorithm = new PaillierManaged
+                    {
+                        Padding = PaillierPaddingMode.BigIntegerPadding,
+                        KeySize = keySize
+                    };
+
+                    Paillier encryptAlgorithm = new PaillierManaged();
+                    encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
+
+                    Paillier decryptAlgorithm = new PaillierManaged();
+                    decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
+
+                    var z = new BigInteger();
+
                     // Plaintext that is bigger than one block requires different padding (e.g. ANSIX923 or PKCS97)
-                    z = z.GenRandomBits(rnd.Next(1, (algorithm as PaillierManaged).KeyStruct.getPlaintextBlocksize() * 8), rnd2);
+                    z = z.GenRandomBits(rnd.Next(1, (algorithm as PaillierManaged).KeyStruct.getPlaintextBlocksize() * 8), rng);
 
                     var z_bytes = z.ToByteArray();
 
@@ -86,9 +88,11 @@ namespace PaillierTests
 
             for (var keySize = 384; keySize <= 1088; keySize += 8)
             {
-                Paillier algorithm = new PaillierManaged();
-                algorithm.Padding = PaillierPaddingMode.BigIntegerPadding;
-                algorithm.KeySize = keySize;
+                Paillier algorithm = new PaillierManaged
+                {
+                    Padding = PaillierPaddingMode.ANSIX923,
+                    KeySize = keySize
+                };
 
                 Paillier encryptAlgorithm = new PaillierManaged();
                 encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
@@ -104,28 +108,29 @@ namespace PaillierTests
         }
 
         [TestMethod]
-        public void TestAddition_Batchs()
+        public void TestAddition_Batch()
         {
             var iterations = 10;
             var random = new Random();
 
-            // TODO: BigInteger can't hold enough digits for keys larger than 544 bits
-            for (var keySize = 384; keySize <= 544; keySize += 8)
+            for (var i = 0; i < iterations; i++)
             {
-                Paillier algorithm = new PaillierManaged();
-                algorithm.Padding = PaillierPaddingMode.LeadingZeros;
-                algorithm.KeySize = keySize;
-
-                Paillier encryptAlgorithm = new PaillierManaged();
-                encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
-
-                Paillier decryptAlgorithm = new PaillierManaged();
-                decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
-
-                for (var i = 0; i < iterations; i++)
+                for (var keySize = 384; keySize <= 1088; keySize += 8)
                 {
-                    var A = new BigInteger(129);
-                    var B = new BigInteger(128);
+                    Paillier algorithm = new PaillierManaged
+                    {
+                        Padding = PaillierPaddingMode.BigIntegerPadding,
+                        KeySize = keySize
+                    };
+
+                    Paillier encryptAlgorithm = new PaillierManaged();
+                    encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
+
+                    Paillier decryptAlgorithm = new PaillierManaged();
+                    decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
+
+                    var A = new BigInteger(random.Next());
+                    var B = new BigInteger(random.Next());
 
                     var A_bytes = A.ToByteArray();
                     var B_bytes = B.ToByteArray();
@@ -140,8 +145,12 @@ namespace PaillierTests
 
                     // convert to BigInteger
                     var C_dec = new BigInteger(C_dec_bytes);
-                    var Byte = (A + B).ToByteArray();
-                    Assert.AreEqual(C_dec, A + B);
+
+                    Assert.AreEqual(A + B, C_dec, $"Key length: {keySize}{Environment.NewLine}" +
+                                                  $"A:          {A}{Environment.NewLine}" +
+                                                  $"B:          {B}{Environment.NewLine}" +
+                                                  $"A + B:      {A + B}{Environment.NewLine}" +
+                                                  $"C_dec:      {C_dec}");
                 }
             }
         }

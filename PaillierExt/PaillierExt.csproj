@@ -45,10 +45,22 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Deploy PExt.Hom|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BigIntegerExt, Version=0.1.0.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\BigIntegerExt.0.1.0.3\lib\net40\BigIntegerExt.dll</HintPath>
+    </Reference>
+    <Reference Include="PaillierExt.Homomorphism, Version=0.9.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PaillierExt.Homomorphism.0.9.5\lib\net40\PaillierExt.Homomorphism.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -69,20 +81,7 @@
     <None Include="packages.config" />
     <None Include="PaillierExt.nuspec" />
   </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PaillierExt.Homomorphism\PaillierExt.Homomorphism.csproj">
-      <Project>{ea70f49c-0459-4c66-9539-c84faf1e60a9}</Project>
-      <Name>PaillierExt.Homomorphism</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>-->
   <Target Name="AfterBuild" Condition="'$(Configuration)' == 'Deploy PExt'">
     <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\.deploy\PExt-deployLocalNuGet.ps1&quot;">
     </Exec>

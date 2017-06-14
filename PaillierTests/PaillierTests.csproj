@@ -37,6 +37,24 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Deploy PExt|AnyCPU'">
+    <OutputPath>bin\Deploy PExt\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Deploy PExt.Hom|AnyCPU'">
+    <OutputPath>bin\Deploy PExt.Hom\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BigIntegerExt">
       <HintPath>..\packages\BigIntegerExt.0.1.0.3\lib\net40\BigIntegerExt.dll</HintPath>
@@ -61,6 +79,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PaillierExt.Homomorphism\PaillierExt.Homomorphism.csproj">
+      <Project>{ea70f49c-0459-4c66-9539-c84faf1e60a9}</Project>
+      <Name>PaillierExt.Homomorphism</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PaillierExt\PaillierExt.csproj">
       <Project>{75fbbb79-ed7c-4733-8b21-957bfab6ba67}</Project>
       <Name>PaillierExt</Name>

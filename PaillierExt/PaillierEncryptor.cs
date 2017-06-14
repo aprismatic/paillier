@@ -1,17 +1,16 @@
 ﻿/************************************************************************************
  This is an implementation of the Paillier encryption scheme with support for
  homomorphic addition.
- 
+
  This library is provided as-is and is covered by the MIT License [1].
-  
+
  [1] The MIT License (MIT), website, (http://opensource.org/licenses/MIT)
  ************************************************************************************/
 
-using System;
-using System.Security.Cryptography;
-using System.Numerics;
 using BigIntegerExt;
-
+using System;
+using System.Numerics;
+using System.Security.Cryptography;
 
 namespace PaillierExt
 {
@@ -25,34 +24,31 @@ namespace PaillierExt
             o_random = new RNGCryptoServiceProvider();
         }
 
-        // TODO: check again for encryption
         protected override byte[] ProcessDataBlock(byte[] p_block)
         {
             // generate random R
             var R = new BigInteger();
             R = R.GenRandomBits(o_key_struct.N.BitCount() - 1, o_random); // R's bitlength is n-1 so that r is within Zn
 
-
             // ciphertext c = g^m * r^n mod n^2
             var Nsquare = o_key_struct.N * o_key_struct.N;
-            var C = (BigInteger.ModPow(o_key_struct.G, new BigInteger(p_block), Nsquare)
-                           * BigInteger.ModPow(R, o_key_struct.N, Nsquare)) % Nsquare;
+            var m = new BigInteger(p_block);
+            var Gm = BigInteger.ModPow(o_key_struct.G, m, Nsquare);
+            var RN = BigInteger.ModPow(R, o_key_struct.N, Nsquare);
 
+            var C = (Gm * RN) % Nsquare;
 
-
-            // create an array to contain the ciphertext
-            var x_result = new byte[o_ciphertext_blocksize + 2];
+            var x_result = new byte[o_ciphertext_blocksize];
             var c_bytes = C.ToByteArray();
 
-            // copy c_bytes into x_result
             Array.Copy(c_bytes, 0, x_result, 0, c_bytes.Length);
-            // return result array
+
             return x_result;
         }
 
         protected override byte[] ProcessFinalDataBlock(byte[] p_final_block)
         {
-            return (p_final_block.Length > 0) ? ProcessDataBlock(PadPlaintextBlock(p_final_block)) : new byte[0];
+            return p_final_block.Length > 0 ? ProcessDataBlock(PadPlaintextBlock(p_final_block)) : new byte[0];
         }
 
         protected byte[] PadPlaintextBlock(byte[] p_block)
@@ -63,7 +59,6 @@ namespace PaillierExt
 
                 switch (o_key_struct.Padding)
                 {
-                    // trailing zeros
                     case PaillierPaddingMode.TrailingZeros:
                         Array.Copy(p_block, 0, x_padded, 0, p_block.Length);
                         break;
@@ -77,7 +72,7 @@ namespace PaillierExt
 
                     case PaillierPaddingMode.BigIntegerPadding:
                         Array.Copy(p_block, 0, x_padded, 0, p_block.Length);
-                        if ((p_block[p_block.Length - 1] & 0b1000_0000) == 1)
+                        if ((p_block[p_block.Length - 1] & 0b1000_0000) != 0)
                         {
                             for (var i = p_block.Length; i < x_padded.Length; i++)
                             {
