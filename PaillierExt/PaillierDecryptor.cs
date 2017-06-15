@@ -28,8 +28,7 @@ namespace PaillierExt
 
             // calculate M
             // m = (c^lambda(mod nsquare) - 1) / n * miu (mod n)
-            var m = (BigInteger.ModPow(block, o_key_struct.Lambda, o_key_struct.N * o_key_struct.N) - 1) /
-                            o_key_struct.N * o_key_struct.Miu % o_key_struct.N;
+            var m = (BigInteger.ModPow(block, o_key_struct.Lambda, o_key_struct.NSquare) - 1) / o_key_struct.N * o_key_struct.Miu % o_key_struct.N;
             var x_m_bytes = m.ToByteArray();
 
             // we may end up with results which are short some trailing zeros

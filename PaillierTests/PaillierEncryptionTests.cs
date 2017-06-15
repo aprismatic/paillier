@@ -66,7 +66,7 @@ namespace PaillierTests
                     var z = new BigInteger();
 
                     // Plaintext that is bigger than one block requires different padding (e.g. ANSIX923 or PKCS97)
-                    z = z.GenRandomBits(rnd.Next(1, (algorithm as PaillierManaged).KeyStruct.getPlaintextBlocksize() * 8), rng);
+                    z = z.GenRandomBits(rnd.Next(2, (algorithm as PaillierManaged).KeyStruct.getPlaintextBlocksize() * 8), rng);
 
                     var z_bytes = z.ToByteArray();
 
@@ -113,9 +113,9 @@ namespace PaillierTests
             var iterations = 10;
             var random = new Random();
 
-            for (var i = 0; i < iterations; i++)
+            for (var keySize = 384; keySize <= 1088; keySize += 8)
             {
-                for (var keySize = 384; keySize <= 1088; keySize += 8)
+                for (var i = 0; i < iterations; i++)
                 {
                     Paillier algorithm = new PaillierManaged
                     {

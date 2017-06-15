@@ -14,21 +14,34 @@ namespace PaillierExt
 {
     public struct PaillierKeyStruct
     {
-        public BigInteger N;
+        private BigInteger _n;
+
+        public BigInteger N
+        {
+            get => _n;
+            set
+            {
+                _n = value;
+                NSquare = _n * _n;
+            }
+        }
+        public BigInteger NSquare { get; private set; }
+
         public BigInteger G;
         public BigInteger Lambda;
         public BigInteger Miu;
         public PaillierPaddingMode Padding; // this parameter should be considered part of the public key
 
+
         public int getPlaintextBlocksize()
         {
-            return (N.BitCount() - 1) / 8;
+            return (_n.BitCount() - 1) / 8;
         }
 
         // TODO: check again ciphertext and plaintext block size
         public int getCiphertextBlocksize()
         {
-            return ((N.BitCount() + 7) / 8) * 2 + 2;
+            return ((_n.BitCount() + 7) / 8) * 2 + 2;
         }
     }
 }

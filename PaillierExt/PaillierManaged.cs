@@ -210,7 +210,7 @@ namespace PaillierExt
                 throw new ArgumentException("Ciphertext to add should be exactly one block long.", nameof(p_second));
             }
 
-            return Homomorphism.PaillierHomomorphism.Addition(p_first, p_second, o_key_struct.N.ToByteArray());
+            return Homomorphism.PaillierHomomorphism.Addition(p_first, p_second, o_key_struct.NSquare.ToByteArray());
         }
     }
 }

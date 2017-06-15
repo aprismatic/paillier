@@ -31,12 +31,11 @@ namespace PaillierExt
             R = R.GenRandomBits(o_key_struct.N.BitCount() - 1, o_random); // R's bitlength is n-1 so that r is within Zn
 
             // ciphertext c = g^m * r^n mod n^2
-            var Nsquare = o_key_struct.N * o_key_struct.N;
             var m = new BigInteger(p_block);
-            var Gm = BigInteger.ModPow(o_key_struct.G, m, Nsquare);
-            var RN = BigInteger.ModPow(R, o_key_struct.N, Nsquare);
+            var Gm = BigInteger.ModPow(o_key_struct.G, m, o_key_struct.NSquare);
+            var RN = BigInteger.ModPow(R, o_key_struct.N, o_key_struct.NSquare);
 
-            var C = (Gm * RN) % Nsquare;
+            var C = (Gm * RN) % o_key_struct.NSquare;
 
             var x_result = new byte[o_ciphertext_blocksize];
             var c_bytes = C.ToByteArray();
@@ -69,6 +68,7 @@ namespace PaillierExt
 
                     case PaillierPaddingMode.ANSIX923:
                         throw new NotImplementedException();
+                        break;
 
                     case PaillierPaddingMode.BigIntegerPadding:
                         Array.Copy(p_block, 0, x_padded, 0, p_block.Length);
