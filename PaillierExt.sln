@@ -1,42 +1,30 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaillierExt", "PaillierExt\PaillierExt.csproj", "{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaillierTests", "PaillierTests\PaillierTests.csproj", "{52BCA4DA-A181-4DBA-9637-4B462479D3BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaillierExt.Homomorphism", "PaillierExt.Homomorphism\PaillierExt.Homomorphism.csproj", "{EA70F49C-0459-4C66-9539-C84FAF1E60A9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Deploy PExt.Hom|Any CPU = Deploy PExt.Hom|Any CPU
 		Deploy PExt|Any CPU = Deploy PExt|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Deploy PExt.Hom|Any CPU.ActiveCfg = Deploy PExt.Hom|Any CPU
 		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Deploy PExt|Any CPU.ActiveCfg = Deploy PExt|Any CPU
 		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Deploy PExt|Any CPU.Build.0 = Deploy PExt|Any CPU
 		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Release|Any CPU.Build.0 = Release|Any CPU
 		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Deploy PExt.Hom|Any CPU.ActiveCfg = Deploy PExt.Hom|Any CPU
 		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Deploy PExt|Any CPU.ActiveCfg = Deploy PExt|Any CPU
 		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EA70F49C-0459-4C66-9539-C84FAF1E60A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EA70F49C-0459-4C66-9539-C84FAF1E60A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EA70F49C-0459-4C66-9539-C84FAF1E60A9}.Deploy PExt.Hom|Any CPU.ActiveCfg = Deploy PExt.Hom|Any CPU
-		{EA70F49C-0459-4C66-9539-C84FAF1E60A9}.Deploy PExt.Hom|Any CPU.Build.0 = Deploy PExt.Hom|Any CPU
-		{EA70F49C-0459-4C66-9539-C84FAF1E60A9}.Deploy PExt|Any CPU.ActiveCfg = Deploy PExt|Any CPU
-		{EA70F49C-0459-4C66-9539-C84FAF1E60A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EA70F49C-0459-4C66-9539-C84FAF1E60A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
