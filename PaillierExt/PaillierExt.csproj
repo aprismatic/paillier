@@ -45,22 +45,13 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Deploy PExt.Hom|AnyCPU'">
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BigIntegerExt, Version=0.1.0.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\BigIntegerExt.0.1.0.3\lib\net40\BigIntegerExt.dll</HintPath>
     </Reference>
-    <Reference Include="PaillierExt.Homomorphism, Version=0.9.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PaillierExt.Homomorphism.0.9.5\lib\net40\PaillierExt.Homomorphism.dll</HintPath>
+    <Reference Include="PaillierExt.Homomorphism, Version=0.10.0.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PaillierExt.Homomorphism.0.10.0.3\lib\net40\PaillierExt.Homomorphism.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
