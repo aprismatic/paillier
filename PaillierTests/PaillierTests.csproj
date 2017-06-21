@@ -79,10 +79,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PaillierExt.Homomorphism\PaillierExt.Homomorphism.csproj">
-      <Project>{ea70f49c-0459-4c66-9539-c84faf1e60a9}</Project>
-      <Name>PaillierExt.Homomorphism</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PaillierExt\PaillierExt.csproj">
       <Project>{75fbbb79-ed7c-4733-8b21-957bfab6ba67}</Project>
       <Name>PaillierExt</Name>

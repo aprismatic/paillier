@@ -108,6 +108,28 @@ namespace PaillierTests
         }
 
         [TestMethod]
+        public void TestSpecificCases()
+        {
+            {
+                Paillier algorithm = new PaillierManaged
+                {
+                    Padding = PaillierPaddingMode.BigIntegerPadding,
+                    KeySize = 384
+                };
+
+                var z = new BigInteger(138);
+                var z_bytes = z.ToByteArray();
+
+                var z_enc_bytes = algorithm.EncryptData(z_bytes);
+                var z_dec_bytes = algorithm.DecryptData(z_enc_bytes);
+
+                var z_dec = new BigInteger(z_dec_bytes);
+
+                Assert.AreEqual(z, z_dec);
+            }
+        }
+
+        [TestMethod]
         public void TestAddition_Batch()
         {
             var iterations = 10;

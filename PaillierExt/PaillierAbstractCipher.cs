@@ -31,13 +31,14 @@ namespace PaillierExt
 
         public byte[] ProcessData(byte[] p_data)
         {
-            byte[] res;
+            var x_complete_blocks = p_data.Length / o_block_size + (p_data.Length % o_block_size > 0 ? 1 : 0);
+            x_complete_blocks = Math.Max(x_complete_blocks - 1, 0);
+
+            if (x_complete_blocks == 0)
+                return ProcessFinalDataBlock(p_data);
 
             using (var x_stream = new MemoryStream())
             {
-                var x_complete_blocks = p_data.Length / o_block_size + (p_data.Length % o_block_size > 0 ? 1 : 0);
-                x_complete_blocks = Math.Max(x_complete_blocks - 1, 0);
-
                 var x_block = new byte[o_block_size];
 
                 var i = 0;
@@ -57,10 +58,8 @@ namespace PaillierExt
 
                 x_stream.Write(x_final_result, 0, x_final_result.Length);
 
-                res = x_stream.ToArray();
+                return x_stream.ToArray();
             }
-
-            return res;
         }
 
         protected abstract byte[] ProcessDataBlock(byte[] p_block);
