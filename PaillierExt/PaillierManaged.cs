@@ -39,9 +39,9 @@ namespace PaillierExt
             LegalKeySizesValue = new KeySizes[] { new KeySizes(384, 1088, 8) };
         }
 
-        public string SignatureAlgorithm => "Paillier";
+        public override string SignatureAlgorithm => "Paillier";
 
-        public string KeyExchangeAlgorithm => "Paillier";
+        public override string KeyExchangeAlgorithm => "Paillier";
 
         // TODO: check again for Miu
         private void CreateKeyPair(int p_key_strength)
