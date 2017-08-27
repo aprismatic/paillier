@@ -10,19 +10,15 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Deploy PExt|Any CPU = Deploy PExt|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Deploy PExt|Any CPU.ActiveCfg = Deploy PExt|Any CPU
-		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Deploy PExt|Any CPU.Build.0 = Deploy PExt|Any CPU
 		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}.Release|Any CPU.Build.0 = Release|Any CPU
 		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Deploy PExt|Any CPU.ActiveCfg = Deploy PExt|Any CPU
 		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52BCA4DA-A181-4DBA-9637-4B462479D3BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection

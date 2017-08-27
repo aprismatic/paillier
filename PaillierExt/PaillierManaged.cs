@@ -39,16 +39,16 @@ namespace PaillierExt
             LegalKeySizesValue = new KeySizes[] { new KeySizes(384, 1088, 8) };
         }
 
-        public override string SignatureAlgorithm => "Paillier";
+        public string SignatureAlgorithm => "Paillier";
 
-        public override string KeyExchangeAlgorithm => "Paillier";
+        public string KeyExchangeAlgorithm => "Paillier";
 
         // TODO: check again for Miu
         private void CreateKeyPair(int p_key_strength)
         {
             // create the large prime number, p and q
             // p and q are assumed to have the same bit length (512 bit each, so that N is 1024)
-            using (var x_random_generator = new RNGCryptoServiceProvider())
+            using (var x_random_generator = RandomNumberGenerator.Create())
             {
                 var p = new BigInteger();
                 var q = new BigInteger();
