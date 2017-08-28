@@ -1,5 +1,5 @@
 ﻿using BigIntegerExt;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using PaillierExt;
 using System;
 using System.Numerics;
@@ -8,10 +8,9 @@ using System.Text;
 
 namespace PaillierTests
 {
-    [TestClass]
     public class PaillierEncryptionTests
     {
-        [TestMethod]
+        [Fact]
         public void TestZero()
         {
             for (var keySize = 384; keySize <= 1088; keySize += 8)
@@ -36,11 +35,11 @@ namespace PaillierTests
 
                 var z_dec = new BigInteger(z_dec_bytes);
 
-                Assert.AreEqual(z, z_dec);
+                Assert.Equal(z, z_dec);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void TestRandomBigIntegers()
         {
             var iterations = 10;
@@ -75,12 +74,12 @@ namespace PaillierTests
 
                     var z_dec = new BigInteger(z_dec_bytes);
 
-                    Assert.AreEqual(z, z_dec);
+                    Assert.Equal(z, z_dec);
                 }
             }
         }
 
-        //[TestMethod] //TODO: for text need to implement ANSIX923 or PKCS7 padding
+        //[Fact] //TODO: for text need to implement ANSIX923 or PKCS7 padding
         public void TestTextEncryption()
         {
             var message = "This is to test Paillier encryption and hopefully this message contains more than 2 blocks please please please please please please please please please please please pleaseplease please please pleaseplease please please please          ";
@@ -103,11 +102,11 @@ namespace PaillierTests
                 var ciphertext = encryptAlgorithm.EncryptData(plaintext);
                 var candidatePlaintext = decryptAlgorithm.DecryptData(ciphertext);
 
-                CollectionAssert.AreEqual(plaintext, candidatePlaintext);
+                Assert.Equal(plaintext, candidatePlaintext);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSpecificCases()
         {
             {
@@ -125,11 +124,11 @@ namespace PaillierTests
 
                 var z_dec = new BigInteger(z_dec_bytes);
 
-                Assert.AreEqual(z, z_dec);
+                Assert.Equal(z, z_dec);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void TestAddition_Batch()
         {
             var iterations = 10;
@@ -168,11 +167,11 @@ namespace PaillierTests
                     // convert to BigInteger
                     var C_dec = new BigInteger(C_dec_bytes);
 
-                    Assert.AreEqual(A + B, C_dec, $"Key length: {keySize}{Environment.NewLine}" +
-                                                  $"A:          {A}{Environment.NewLine}" +
-                                                  $"B:          {B}{Environment.NewLine}" +
-                                                  $"A + B:      {A + B}{Environment.NewLine}" +
-                                                  $"C_dec:      {C_dec}");
+                    Assert.True(A + B == C_dec, $"Key length: {keySize}{Environment.NewLine}" +
+                                                $"A:          {A}{Environment.NewLine}" +
+                                                $"B:          {B}{Environment.NewLine}" +
+                                                $"A + B:      {A + B}{Environment.NewLine}" +
+                                                $"C_dec:      {C_dec}");
                 }
             }
         }

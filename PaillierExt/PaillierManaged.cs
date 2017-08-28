@@ -48,7 +48,7 @@ namespace PaillierExt
         {
             // create the large prime number, p and q
             // p and q are assumed to have the same bit length (512 bit each, so that N is 1024)
-            using (var x_random_generator = new RNGCryptoServiceProvider())
+            using (var x_random_generator = RandomNumberGenerator.Create())
             {
                 var p = new BigInteger();
                 var q = new BigInteger();

@@ -16,12 +16,12 @@ namespace PaillierExt
 {
     public class PaillierEncryptor : PaillierAbstractCipher, IDisposable
     {
-        private RNGCryptoServiceProvider o_random;
+        private RandomNumberGenerator o_random;
 
         public PaillierEncryptor(PaillierKeyStruct p_struct)
             : base(p_struct)
         {
-            o_random = new RNGCryptoServiceProvider();
+            o_random = RandomNumberGenerator.Create();
         }
 
         protected override byte[] ProcessDataBlock(byte[] p_block)
