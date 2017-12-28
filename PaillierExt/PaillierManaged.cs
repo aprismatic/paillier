@@ -199,17 +199,6 @@ namespace PaillierExt
 
         public override byte[] Addition(byte[] p_first, byte[] p_second)
         {
-            var blocksize = o_key_struct.getCiphertextBlocksize();
-
-            if (p_first.Length != blocksize)
-            {
-                throw new ArgumentException("Ciphertext to add should be exactly one block long.", nameof(p_first));
-            }
-            if (p_second.Length != blocksize)
-            {
-                throw new ArgumentException("Ciphertext to add should be exactly one block long.", nameof(p_second));
-            }
-
             return Homomorphism.PaillierHomomorphism.Addition(p_first, p_second, o_key_struct.NSquare.ToByteArray());
         }
     }

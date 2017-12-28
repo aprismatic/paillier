@@ -175,5 +175,31 @@ namespace PaillierTests
                 }
             }
         }
+
+        [Fact(DisplayName = "From issue #15")]
+        public void Test_FromIssue_15() // based on https://github.com/bazzilic/PaillierExt/issues/15
+        {
+            for (var keySize = 384; keySize <= 1088; keySize += 8)
+            {
+                Paillier algorithm = new PaillierManaged
+                {
+                    Padding = PaillierPaddingMode.BigIntegerPadding,
+                    KeySize = keySize
+                };
+
+                var sum = algorithm.EncryptData(new BigInteger(0).ToByteArray());
+                var one = algorithm.EncryptData(new BigInteger(1).ToByteArray());
+
+                for (var i = 0; i < 1000; i++)
+                {
+                    sum = algorithm.Addition(sum, one);
+                }
+
+                var sum_bytes = algorithm.DecryptData(sum);
+                var sum_dec = new BigInteger(sum_bytes);
+
+                Assert.Equal(new BigInteger(1000), sum_dec);
+            }
+        }
     }
 }
