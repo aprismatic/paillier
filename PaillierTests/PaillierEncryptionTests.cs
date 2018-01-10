@@ -1,16 +1,16 @@
 ﻿using BigIntegerExt;
-using Xunit;
 using PaillierExt;
 using System;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
+using Xunit;
 
 namespace PaillierTests
 {
     public class PaillierEncryptionTests
     {
-        [Fact]
+        [Fact(DisplayName = "Zero")]
         public void TestZero()
         {
             for (var keySize = 384; keySize <= 1088; keySize += 8)
@@ -39,7 +39,7 @@ namespace PaillierTests
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "Random BigIntegers")]
         public void TestRandomBigIntegers()
         {
             var iterations = 10;
@@ -106,7 +106,7 @@ namespace PaillierTests
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "Specific cases")]
         public void TestSpecificCases()
         {
             {
@@ -128,7 +128,7 @@ namespace PaillierTests
             }
         }
 
-        [Fact]
+        [Fact(DisplayName = "Addition batch")]
         public void TestAddition_Batch()
         {
             var iterations = 10;
