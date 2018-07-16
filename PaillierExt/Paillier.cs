@@ -11,25 +11,26 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Linq;
+using System.Numerics;
 
 namespace PaillierExt
 {
-    public enum PaillierPaddingMode : byte
+    /*public enum PaillierPaddingMode : byte
     {
         ANSIX923,
         LeadingZeros,
         TrailingZeros,
         BigIntegerPadding
-    }
+    }*/
 
     public abstract class Paillier : AsymmetricAlgorithm
     {
-        public PaillierPaddingMode Padding;
+        //public PaillierPaddingMode Padding;
 
         public abstract void ImportParameters(PaillierParameters p_parameters);
         public abstract PaillierParameters ExportParameters(bool p_include_private_params);
-        public abstract byte[] EncryptData(byte[] p_data);
-        public abstract byte[] DecryptData(byte[] p_data);
+        public abstract byte[] EncryptData(BigInteger p_data);
+        public abstract BigInteger DecryptData(byte[] p_data);
         public abstract byte[] Sign(byte[] p_hashcode);
         public abstract bool VerifySignature(byte[] p_hashcode, byte[] p_signature);
 
@@ -44,7 +45,7 @@ namespace PaillierExt
 
             x_sb.Append("<N>" + Convert.ToBase64String(x_params.N) + "</N>");
             x_sb.Append("<G>" + Convert.ToBase64String(x_params.G) + "</G>");
-            x_sb.Append("<Padding>" + x_params.Padding.ToString() + "</Padding>");
+            //x_sb.Append("<Padding>" + x_params.Padding.ToString() + "</Padding>");
 
             if (p_include_private)
             {
@@ -65,7 +66,7 @@ namespace PaillierExt
 
             x_params.N = Convert.FromBase64String((String)keyValues.Element("N") ?? "");
             x_params.G = Convert.FromBase64String((String)keyValues.Element("G") ?? "");
-            x_params.Padding = (PaillierPaddingMode)Enum.Parse(typeof(PaillierPaddingMode), (String)keyValues.Element("Padding") ?? "");
+            //x_params.Padding = (PaillierPaddingMode)Enum.Parse(typeof(PaillierPaddingMode), (String)keyValues.Element("Padding") ?? "");
             x_params.Lambda = Convert.FromBase64String((String)keyValues.Element("Lambda") ?? "");
             x_params.Miu = Convert.FromBase64String((String)keyValues.Element("Miu") ?? "");
 

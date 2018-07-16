@@ -33,7 +33,7 @@ namespace PaillierExt
             KeySizeValue = 1024;
 
             // set the default padding mode
-            Padding = PaillierPaddingMode.LeadingZeros;
+            //Padding = PaillierPaddingMode.LeadingZeros;
 
             // set the range of legal keys
             LegalKeySizesValue = new KeySizes[] { new KeySizes(384, 1088, 8) };
@@ -83,7 +83,7 @@ namespace PaillierExt
                 o_key_struct.Miu = ((BigInteger.ModPow(o_key_struct.G, o_key_struct.Lambda, o_key_struct.N * o_key_struct.N) - 1)
                             / o_key_struct.N).ModInverse(o_key_struct.N);
 
-                o_key_struct.Padding = Padding;
+                //o_key_struct.Padding = Padding;
             }
         }
 
@@ -113,7 +113,7 @@ namespace PaillierExt
         {
             o_key_struct.N = new BigInteger(p_parameters.N);
             o_key_struct.G = new BigInteger(p_parameters.G);
-            o_key_struct.Padding = p_parameters.Padding;
+            //o_key_struct.Padding = p_parameters.Padding;
 
             if (p_parameters.Lambda != null
              && p_parameters.Lambda.Length > 0
@@ -138,7 +138,7 @@ namespace PaillierExt
             {
                 N = o_key_struct.N.ToByteArray(),
                 G = o_key_struct.G.ToByteArray(),
-                Padding = o_key_struct.Padding
+                //Padding = o_key_struct.Padding
             };
 
             // if required, include the private value, X
@@ -157,7 +157,7 @@ namespace PaillierExt
             return x_params;
         }
 
-        public override byte[] EncryptData(byte[] p_data)
+        public override byte[] EncryptData(BigInteger p_data)
         {
             if (NeedToGenerateKey())
             {
@@ -166,11 +166,11 @@ namespace PaillierExt
 
             using (var x_enc = new PaillierEncryptor(o_key_struct))
             {
-                return x_enc.ProcessData(p_data);
+                return x_enc.ProcessBlockBigInteger(p_data);
             }
         }
 
-        public override byte[] DecryptData(byte[] p_data)
+        public override BigInteger DecryptData(byte[] p_data)
         {
             if (NeedToGenerateKey())
             {
@@ -179,7 +179,7 @@ namespace PaillierExt
 
             var x_enc = new PaillierDecryptor(o_key_struct);
 
-            return x_enc.ProcessData(p_data);
+            return x_enc.ProcessBlockByte(p_data);
         }
 
         protected override void Dispose(bool p_bool)

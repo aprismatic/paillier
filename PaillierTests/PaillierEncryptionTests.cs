@@ -10,35 +10,7 @@ namespace PaillierTests
 {
     public class PaillierEncryptionTests
     {
-        [Fact(DisplayName = "Zero")]
-        public void TestZero()
-        {
-            for (var keySize = 384; keySize <= 1088; keySize += 8)
-            {
-                Paillier algorithm = new PaillierManaged
-                {
-                    Padding = PaillierPaddingMode.BigIntegerPadding,
-                    KeySize = keySize
-                };
-
-                Paillier encryptAlgorithm = new PaillierManaged();
-                encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
-
-                Paillier decryptAlgorithm = new PaillierManaged();
-                decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
-
-                var z = new BigInteger(0);
-                var z_bytes = z.ToByteArray();
-
-                var z_enc_bytes = encryptAlgorithm.EncryptData(z_bytes);
-                var z_dec_bytes = decryptAlgorithm.DecryptData(z_enc_bytes);
-
-                var z_dec = new BigInteger(z_dec_bytes);
-
-                Assert.Equal(z, z_dec);
-            }
-        }
-
+       
         [Fact(DisplayName = "Random BigIntegers")]
         public void TestRandomBigIntegers()
         {
@@ -52,7 +24,6 @@ namespace PaillierTests
                 {
                     Paillier algorithm = new PaillierManaged
                     {
-                        Padding = PaillierPaddingMode.BigIntegerPadding,
                         KeySize = keySize
                     };
 
@@ -67,44 +38,14 @@ namespace PaillierTests
                     // Plaintext that is bigger than one block requires different padding (e.g. ANSIX923 or PKCS97)
                     z = z.GenRandomBits(rnd.Next(2, (algorithm as PaillierManaged).KeyStruct.getPlaintextBlocksize() * 8), rng);
 
-                    var z_bytes = z.ToByteArray();
-
-                    var z_enc_bytes = encryptAlgorithm.EncryptData(z_bytes);
+                    var z_enc_bytes = encryptAlgorithm.EncryptData(z);
                     var z_dec_bytes = decryptAlgorithm.DecryptData(z_enc_bytes);
 
-                    var z_dec = new BigInteger(z_dec_bytes);
-
-                    Assert.Equal(z, z_dec);
+                    Assert.Equal(z, z_dec_bytes);
                 }
             }
         }
 
-        //[Fact] //TODO: for text need to implement ANSIX923 or PKCS7 padding
-        public void TestTextEncryption()
-        {
-            var message = "This is to test Paillier encryption and hopefully this message contains more than 2 blocks please please please please please please please please please please please pleaseplease please please pleaseplease please please please          ";
-            var plaintext = Encoding.Default.GetBytes(message);
-
-            for (var keySize = 384; keySize <= 1088; keySize += 8)
-            {
-                Paillier algorithm = new PaillierManaged
-                {
-                    Padding = PaillierPaddingMode.ANSIX923,
-                    KeySize = keySize
-                };
-
-                Paillier encryptAlgorithm = new PaillierManaged();
-                encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
-
-                Paillier decryptAlgorithm = new PaillierManaged();
-                decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
-
-                var ciphertext = encryptAlgorithm.EncryptData(plaintext);
-                var candidatePlaintext = decryptAlgorithm.DecryptData(ciphertext);
-
-                Assert.Equal(plaintext, candidatePlaintext);
-            }
-        }
 
         [Fact(DisplayName = "Specific cases")]
         public void TestSpecificCases()
@@ -112,19 +53,15 @@ namespace PaillierTests
             {
                 Paillier algorithm = new PaillierManaged
                 {
-                    Padding = PaillierPaddingMode.BigIntegerPadding,
                     KeySize = 384
                 };
 
                 var z = new BigInteger(138);
-                var z_bytes = z.ToByteArray();
 
-                var z_enc_bytes = algorithm.EncryptData(z_bytes);
+                var z_enc_bytes = algorithm.EncryptData(z);
                 var z_dec_bytes = algorithm.DecryptData(z_enc_bytes);
 
-                var z_dec = new BigInteger(z_dec_bytes);
-
-                Assert.Equal(z, z_dec);
+                Assert.Equal(z, z_dec_bytes);
             }
         }
 
@@ -140,7 +77,6 @@ namespace PaillierTests
                 {
                     Paillier algorithm = new PaillierManaged
                     {
-                        Padding = PaillierPaddingMode.BigIntegerPadding,
                         KeySize = keySize
                     };
 
@@ -153,25 +89,20 @@ namespace PaillierTests
                     var A = new BigInteger(random.Next());
                     var B = new BigInteger(random.Next());
 
-                    var A_bytes = A.ToByteArray();
-                    var B_bytes = B.ToByteArray();
-
                     //encrypt A and B
-                    var A_enc_bytes = encryptAlgorithm.EncryptData(A_bytes);
-                    var B_enc_bytes = encryptAlgorithm.EncryptData(B_bytes);
+                    var A_enc_bytes = encryptAlgorithm.EncryptData(A);
+                    var B_enc_bytes = encryptAlgorithm.EncryptData(B);
 
                     // getting homomorphic addition result
                     var C_enc_bytes = encryptAlgorithm.Addition(A_enc_bytes, B_enc_bytes);
                     var C_dec_bytes = decryptAlgorithm.DecryptData(C_enc_bytes);
 
-                    // convert to BigInteger
-                    var C_dec = new BigInteger(C_dec_bytes);
 
-                    Assert.True(A + B == C_dec, $"Key length: {keySize}{Environment.NewLine}" +
+                    Assert.True(A + B == C_dec_bytes, $"Key length: {keySize}{Environment.NewLine}" +
                                                 $"A:          {A}{Environment.NewLine}" +
                                                 $"B:          {B}{Environment.NewLine}" +
                                                 $"A + B:      {A + B}{Environment.NewLine}" +
-                                                $"C_dec:      {C_dec}");
+                                                $"C_dec:      {C_dec_bytes}");
                 }
             }
         }
@@ -183,12 +114,11 @@ namespace PaillierTests
             {
                 Paillier algorithm = new PaillierManaged
                 {
-                    Padding = PaillierPaddingMode.BigIntegerPadding,
                     KeySize = keySize
                 };
 
-                var sum = algorithm.EncryptData(new BigInteger(0).ToByteArray());
-                var one = algorithm.EncryptData(new BigInteger(1).ToByteArray());
+                var sum = algorithm.EncryptData(new BigInteger(0));
+                var one = algorithm.EncryptData(new BigInteger(1));
 
                 for (var i = 0; i < 1000; i++)
                 {
@@ -196,9 +126,8 @@ namespace PaillierTests
                 }
 
                 var sum_bytes = algorithm.DecryptData(sum);
-                var sum_dec = new BigInteger(sum_bytes);
 
-                Assert.Equal(new BigInteger(1000), sum_dec);
+                Assert.Equal(new BigInteger(1000), sum_bytes);
             }
         }
     }

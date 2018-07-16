@@ -30,7 +30,7 @@ namespace PaillierExt
         public BigInteger G;
         public BigInteger Lambda;
         public BigInteger Miu;
-        public PaillierPaddingMode Padding; // this parameter should be considered part of the public key
+        //public PaillierPaddingMode Padding; // this parameter should be considered part of the public key
 
 
         public int getPlaintextBlocksize()

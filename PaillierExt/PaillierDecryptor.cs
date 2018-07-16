@@ -22,91 +22,15 @@ namespace PaillierExt
         }
 
         //TODO: check again for decryption
-        protected override byte[] ProcessDataBlock(byte[] p_block)
+        public BigInteger ProcessBlockByte(byte[] p_block)
         {
             var block = new BigInteger(p_block);
 
             // calculate M
             // m = (c^lambda(mod nsquare) - 1) / n * miu (mod n)
             var m = (BigInteger.ModPow(block, o_key_struct.Lambda, o_key_struct.NSquare) - 1) / o_key_struct.N * o_key_struct.Miu % o_key_struct.N;
-            var x_m_bytes = m.ToByteArray();
 
-            // we may end up with results which are short some trailing zeros
-            if (x_m_bytes.Length < o_plaintext_blocksize)
-            {
-                var x_full_result = new byte[o_plaintext_blocksize];
-                Array.Copy(x_m_bytes, 0, x_full_result, 0, x_m_bytes.Length);
-                x_m_bytes = x_full_result;
-            }
-
-            return x_m_bytes;
-        }
-
-        protected override byte[] ProcessFinalDataBlock(byte[] p_final_block)
-        {
-            return p_final_block.Length > 0 ? UnpadPlaintextBlock(ProcessDataBlock(p_final_block)) : new byte[0];
-        }
-
-        protected byte[] UnpadPlaintextBlock(byte[] p_block)
-        {
-            var x_res = new byte[0];
-
-            switch (o_key_struct.Padding)
-            {
-                case PaillierPaddingMode.LeadingZeros:
-                    var i = 0;
-                    for (; i < p_block.Length; i++)
-                    {
-                        if (p_block[i] != 0)
-                            break;
-                    }
-                    x_res = p_block.Skip(i).ToArray(); // TODO: Consider rewriting without LINQ
-                    break;
-
-                case PaillierPaddingMode.TrailingZeros:
-                    var j = p_block.Length - 1;
-                    for (; j >= 0; j--)
-                    {
-                        if (p_block[j] != 0)
-                            break;
-                    }
-                    x_res = p_block.Take(j + 1).ToArray(); // TODO: Consider rewriting without LINQ
-                    break;
-
-                case PaillierPaddingMode.ANSIX923:
-                    throw new NotImplementedException();
-
-                case PaillierPaddingMode.BigIntegerPadding:
-                    var k = p_block.Length - 1;
-                    if (p_block[k] == 0xFF)
-                    {
-                        for (; k >= 0; k--)
-                        {
-                            if (p_block[k] == 0xFF) continue;
-                            if ((p_block[k] & 0b1000_0000) == 0)
-                                k++;
-                            break;
-                        }
-                    }
-                    else if (p_block[k] == 0)
-                    {
-                        for (; k >= 0; k--)
-                        {
-                            if (p_block[k] == 0) continue;
-                            if ((p_block[k] & 0b1000_0000) != 0)
-                                k++;
-                            break;
-                        }
-                    }
-                    x_res = p_block.Take(k + 1).ToArray(); // TODO: Consider rewriting without LINQ
-                    break;
-
-                // unlikely to happen
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            return x_res;
+            return m;
         }
     }
 }

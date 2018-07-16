@@ -17,7 +17,7 @@ namespace PaillierExt
         public byte[] N;
         public byte[] G;
 
-        public PaillierPaddingMode Padding;
+        //public PaillierPaddingMode Padding;
         
         public byte[] Lambda;
         public byte[] Miu;
