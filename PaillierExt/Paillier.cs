@@ -13,7 +13,7 @@ using System.Text;
 using System.Xml.Linq;
 using System.Numerics;
 
-namespace PaillierExt
+namespace PaillierExtModified
 {
     /*public enum PaillierPaddingMode : byte
     {
@@ -23,7 +23,7 @@ namespace PaillierExt
         BigIntegerPadding
     }*/
 
-    public abstract class Paillier : AsymmetricAlgorithm
+    public abstract class PaillierModified : AsymmetricAlgorithm
     {
         //public PaillierPaddingMode Padding;
 

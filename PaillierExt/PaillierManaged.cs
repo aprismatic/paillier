@@ -12,13 +12,13 @@ using System.Security.Cryptography;
 using System.Numerics;
 using BigIntegerExt;
 
-namespace PaillierExt
+namespace PaillierExtModified
 {
-    public class PaillierManaged : Paillier
+    public class PaillierModifiedManaged : PaillierModified
     {
         private PaillierKeyStruct o_key_struct;
 
-        public PaillierManaged()
+        public PaillierModifiedManaged()
         {
             // create the key struct and initialize with zeros
             o_key_struct = new PaillierKeyStruct
@@ -199,7 +199,7 @@ namespace PaillierExt
 
         public override byte[] Addition(byte[] p_first, byte[] p_second)
         {
-            return Homomorphism.PaillierHomomorphism.Addition(p_first, p_second, o_key_struct.NSquare.ToByteArray());
+            return PaillierExt.Homomorphism.PaillierHomomorphism.Addition(p_first, p_second, o_key_struct.NSquare.ToByteArray());
         }
     }
 }

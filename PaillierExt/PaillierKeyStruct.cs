@@ -10,7 +10,7 @@
 using System.Numerics;
 using BigIntegerExt;
 
-namespace PaillierExt
+namespace PaillierExtModified
 {
     public struct PaillierKeyStruct
     {

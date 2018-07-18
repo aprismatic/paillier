@@ -9,7 +9,7 @@
 
 using System;
 
-namespace PaillierExt
+namespace PaillierExtModified
 {
     [Serializable]
     public struct PaillierParameters

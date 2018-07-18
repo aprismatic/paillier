@@ -4,7 +4,7 @@
     <Version>0.10.0.0</Version>
     <Description>Extension for the .NET Framework cryptography subsystem, which introduces the Paillier public key cryptosystem with support for homomorphic addition.</Description>
     <Company>Nanyang Technological Unviersity</Company>
-    <Product>PaillierExt</Product>
+    <Product>PaillierExtModified</Product>
     <Authors>Vasily Sidorov (bazzilic)</Authors>
   </PropertyGroup>
   <ItemGroup>

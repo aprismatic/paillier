@@ -12,7 +12,7 @@ using System;
 using System.Numerics;
 using System.Security.Cryptography;
 
-namespace PaillierExt
+namespace PaillierExtModified
 {
     public class PaillierEncryptor : PaillierAbstractCipher, IDisposable
     {

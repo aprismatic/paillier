@@ -1,5 +1,5 @@
 ﻿using BigIntegerExt;
-using PaillierExt;
+using PaillierExtModified;
 using System;
 using System.Numerics;
 using System.Security.Cryptography;
@@ -22,21 +22,21 @@ namespace PaillierTests
             {
                 for (var i = 0; i < iterations; i++)
                 {
-                    Paillier algorithm = new PaillierManaged
+                    PaillierModified algorithm = new PaillierModifiedManaged
                     {
                         KeySize = keySize
                     };
 
-                    Paillier encryptAlgorithm = new PaillierManaged();
+                    PaillierModified encryptAlgorithm = new PaillierModifiedManaged();
                     encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
 
-                    Paillier decryptAlgorithm = new PaillierManaged();
+                    PaillierModified decryptAlgorithm = new PaillierModifiedManaged();
                     decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
 
                     var z = new BigInteger();
 
                     // Plaintext that is bigger than one block requires different padding (e.g. ANSIX923 or PKCS97)
-                    z = z.GenRandomBits(rnd.Next(2, (algorithm as PaillierManaged).KeyStruct.getPlaintextBlocksize() * 8), rng);
+                    z = z.GenRandomBits(rnd.Next(2, (algorithm as PaillierModifiedManaged).KeyStruct.getPlaintextBlocksize() * 8), rng);
 
                     var z_enc_bytes = encryptAlgorithm.EncryptData(z);
                     var z_dec_bytes = decryptAlgorithm.DecryptData(z_enc_bytes);
@@ -51,7 +51,7 @@ namespace PaillierTests
         public void TestSpecificCases()
         {
             {
-                Paillier algorithm = new PaillierManaged
+                PaillierModified algorithm = new PaillierModifiedManaged
                 {
                     KeySize = 384
                 };
@@ -75,15 +75,15 @@ namespace PaillierTests
             {
                 for (var i = 0; i < iterations; i++)
                 {
-                    Paillier algorithm = new PaillierManaged
+                    PaillierModified algorithm = new PaillierModifiedManaged
                     {
                         KeySize = keySize
                     };
 
-                    Paillier encryptAlgorithm = new PaillierManaged();
+                    PaillierModified encryptAlgorithm = new PaillierModifiedManaged();
                     encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
 
-                    Paillier decryptAlgorithm = new PaillierManaged();
+                    PaillierModified decryptAlgorithm = new PaillierModifiedManaged();
                     decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
 
                     var A = new BigInteger(random.Next());
@@ -112,7 +112,7 @@ namespace PaillierTests
         {
             for (var keySize = 384; keySize <= 1088; keySize += 8)
             {
-                Paillier algorithm = new PaillierManaged
+                PaillierModified algorithm = new PaillierModifiedManaged
                 {
                     KeySize = keySize
                 };
