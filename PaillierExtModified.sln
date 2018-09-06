@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaillierExtModified", "PaillierExt\PaillierExtModified.csproj", "{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaillierExt", "PaillierExt\PaillierExt.csproj", "{75FBBB79-ED7C-4733-8B21-957BFAB6BA67}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaillierTests", "PaillierTests\PaillierTests.csproj", "{52BCA4DA-A181-4DBA-9637-4B462479D3BA}"
 EndProject

@@ -10,7 +10,7 @@
 using System.Numerics;
 using BigIntegerExt;
 
-namespace PaillierExtModified
+namespace PaillierExt
 {
     public struct PaillierKeyStruct
     {
@@ -30,7 +30,6 @@ namespace PaillierExtModified
         public BigInteger G;
         public BigInteger Lambda;
         public BigInteger Miu;
-        //public PaillierPaddingMode Padding; // this parameter should be considered part of the public key
 
 
         public int getPlaintextBlocksize()

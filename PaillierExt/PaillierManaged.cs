@@ -12,13 +12,13 @@ using System.Security.Cryptography;
 using System.Numerics;
 using BigIntegerExt;
 
-namespace PaillierExtModified
+namespace PaillierExt
 {
-    public class PaillierModifiedManaged : PaillierModified
+    public class PaillierManaged : Paillier
     {
         private PaillierKeyStruct o_key_struct;
 
-        public PaillierModifiedManaged()
+        public PaillierManaged()
         {
             // create the key struct and initialize with zeros
             o_key_struct = new PaillierKeyStruct
@@ -31,9 +31,6 @@ namespace PaillierExtModified
 
             // set the default key size value
             KeySizeValue = 1024;
-
-            // set the default padding mode
-            //Padding = PaillierPaddingMode.LeadingZeros;
 
             // set the range of legal keys
             LegalKeySizesValue = new KeySizes[] { new KeySizes(384, 1088, 8) };
@@ -82,8 +79,6 @@ namespace PaillierExtModified
                 //o_key_struct.Miu = o_key_struct.Lambda.modInverse(o_key_struct.N);
                 o_key_struct.Miu = ((BigInteger.ModPow(o_key_struct.G, o_key_struct.Lambda, o_key_struct.N * o_key_struct.N) - 1)
                             / o_key_struct.N).ModInverse(o_key_struct.N);
-
-                //o_key_struct.Padding = Padding;
             }
         }
 
@@ -113,7 +108,6 @@ namespace PaillierExtModified
         {
             o_key_struct.N = new BigInteger(p_parameters.N);
             o_key_struct.G = new BigInteger(p_parameters.G);
-            //o_key_struct.Padding = p_parameters.Padding;
 
             if (p_parameters.Lambda != null
              && p_parameters.Lambda.Length > 0
@@ -138,7 +132,6 @@ namespace PaillierExtModified
             {
                 N = o_key_struct.N.ToByteArray(),
                 G = o_key_struct.G.ToByteArray(),
-                //Padding = o_key_struct.Padding
             };
 
             // if required, include the private value, X

@@ -11,7 +11,7 @@ using System;
 using System.IO;
 using System.Numerics;
 
-namespace PaillierExtModified
+namespace PaillierExt
 {
     public abstract class PaillierAbstractCipher
     {
