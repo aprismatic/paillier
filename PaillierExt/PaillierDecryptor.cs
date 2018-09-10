@@ -7,8 +7,6 @@
  [1] The MIT License (MIT), website, (http://opensource.org/licenses/MIT)
  ************************************************************************************/
 
-using System;
-using System.Linq;
 using System.Numerics;
 
 namespace PaillierExt
@@ -22,7 +20,7 @@ namespace PaillierExt
         }
 
         //TODO: check again for decryption
-        public BigInteger ProcessBlockByte(byte[] p_block)
+        public BigInteger ProcessByteBlock(byte[] p_block)
         {
             var block = new BigInteger(p_block);
 

@@ -24,15 +24,19 @@ namespace PaillierExt
             o_random = RandomNumberGenerator.Create();
         }
 
-        public byte[] ProcessBlockBigInteger(BigInteger p_block)
+        public byte[] ProcessBigInteger(BigInteger message)
         {
             // generate random R
             var R = new BigInteger();
             R = R.GenRandomBits(o_key_struct.N.BitCount() - 1, o_random); // R's bitlength is n-1 so that r is within Zn
 
             // ciphertext c = g^m * r^n mod n^2
-            var Gm = BigInteger.ModPow(o_key_struct.G, p_block, o_key_struct.NSquare);
             var RN = BigInteger.ModPow(R, o_key_struct.N, o_key_struct.NSquare);
+
+            // if we use simple key generation (g = n + 1), we can use
+            // (n+1)^m = n*m + 1  mod n^2
+            //var Gm = BigInteger.ModPow(o_key_struct.G, message, o_key_struct.NSquare);
+            var Gm = (o_key_struct.N * message + 1) % o_key_struct.NSquare;
 
             var C = (Gm * RN) % o_key_struct.NSquare;
 

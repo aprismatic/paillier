@@ -31,7 +31,6 @@ namespace PaillierExt
         public BigInteger Lambda;
         public BigInteger Miu;
 
-
         public int getPlaintextBlocksize()
         {
             return (_n.BitCount() - 1) / 8;
