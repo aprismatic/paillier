@@ -148,5 +148,31 @@ namespace PaillierTests
                 Assert.Equal(new BigInteger(1000), sums);
             }
         }
+
+        [Fact(DisplayName = "Negative cases")]
+        public void TestNegativeCases()
+        {
+            {
+                var algorithm = new Paillier
+                {
+                    KeySize = 384
+                };
+
+                var z = new BigInteger(-6);
+                var z_enc_bytes = algorithm.EncryptData(z);
+                var z_dec = algorithm.DecryptData(z_enc_bytes);
+                Assert.Equal(z, z_dec);
+
+
+                var z_2 = new BigInteger(4);
+                var z_enc_bytes_2 = algorithm.EncryptData(z_2);
+                var z_dec_2 = algorithm.DecryptData(z_enc_bytes_2);
+                Assert.Equal(z_2, z_dec_2);
+
+                var z_enc_addition = algorithm.Addition(z_enc_bytes, z_enc_bytes_2);
+                var z_addition = algorithm.DecryptData(z_enc_addition);
+                Assert.Equal(z + z_2, z_addition);
+            }
+        }
     }
 }

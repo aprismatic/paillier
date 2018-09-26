@@ -16,6 +16,7 @@ namespace PaillierExt
 {
     public class PaillierEncryptor : PaillierAbstractCipher, IDisposable
     {
+        private static readonly BigInteger max = new BigInteger(UInt64.MaxValue);
         private RandomNumberGenerator o_random;
 
         public PaillierEncryptor(PaillierKeyStruct p_struct)
@@ -36,7 +37,7 @@ namespace PaillierExt
             // if we use simple key generation (g = n + 1), we can use
             // (n+1)^m = n*m + 1  mod n^2
             //var Gm = BigInteger.ModPow(o_key_struct.G, message, o_key_struct.NSquare);
-            var Gm = (o_key_struct.N * message + 1) % o_key_struct.NSquare;
+            var Gm = (o_key_struct.N * Encode(message) + 1) % o_key_struct.NSquare;
 
             var C = (Gm * RN) % o_key_struct.NSquare;
 
@@ -46,6 +47,13 @@ namespace PaillierExt
             Array.Copy(c_bytes, 0, x_result, 0, c_bytes.Length);
 
             return x_result;
+        }
+
+        private BigInteger Encode(BigInteger a)
+        {
+            if (a < 0)
+                return a + max + 1;
+            return a;
         }
 
         public void Dispose()
