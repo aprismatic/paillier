@@ -1,66 +1,53 @@
-﻿using BigIntegerExt;
-using PaillierExt;
+﻿using PaillierExt;
 using System;
 using System.Numerics;
-using System.Security.Cryptography;
 using Xunit;
 
 namespace PaillierTests
 {
     public class PaillierEncryptionTests
     {
+
         [Fact(DisplayName = "Zero")]
         public void TestZero()
         {
             for (var keySize = 384; keySize <= 1088; keySize += 8)
             {
-                Paillier algorithm = new PaillierManaged
+                var algorithm = new Paillier
                 {
                     KeySize = keySize
                 };
-                Paillier encryptAlgorithm = new PaillierManaged();
+                var encryptAlgorithm = new Paillier();
                 encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
-                Paillier decryptAlgorithm = new PaillierManaged();
+                var decryptAlgorithm = new Paillier();
                 decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
-                var z = new BigInteger(0);
+                BigFraction z = new BigInteger(0);
                 var z_enc_bytes = encryptAlgorithm.EncryptData(z);
-                var z_dec = decryptAlgorithm.DecryptData(z_enc_bytes);
+                BigFraction z_dec = decryptAlgorithm.DecryptData(z_enc_bytes);
+
                 Assert.Equal(z, z_dec);
             }
         }
 
-        [Fact(DisplayName = "Random BigIntegers")]
-        public void TestRandomBigIntegers()
+        [Fact(DisplayName = "Large BigIntegers")]
+        public void TestLargeBigIntegers()
         {
-            var iterations = 10;
-            var rnd = new Random();
-            var rng = new RNGCryptoServiceProvider();
-
             for (var keySize = 384; keySize <= 1088; keySize += 8)
             {
-                for (var i = 0; i < iterations; i++)
+                var algorithm = new Paillier
                 {
-                    Paillier algorithm = new PaillierManaged
-                    {
-                        KeySize = keySize
-                    };
+                    KeySize = keySize
+                };
 
-                    Paillier encryptAlgorithm = new PaillierManaged();
-                    encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
+                //9 hundred trillion
+                var t = new BigInteger(900000000000000);
 
-                    Paillier decryptAlgorithm = new PaillierManaged();
-                    decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
+                BigFraction z = t;
 
-                    var z = new BigInteger();
+                var z_enc_bytes = algorithm.EncryptData(z);
+                var z_dec = algorithm.DecryptData(z_enc_bytes);
 
-                    // Plaintext that is bigger than one block requires different padding (e.g. ANSIX923 or PKCS97)
-                    z = z.GenRandomBits(rnd.Next(2, (algorithm as PaillierManaged).KeyStruct.getPlaintextBlocksize() * 8), rng);
-
-                    var z_enc_bytes = encryptAlgorithm.EncryptData(z);
-                    var z_dec = decryptAlgorithm.DecryptData(z_enc_bytes);
-
-                    Assert.Equal(z, z_dec);
-                }
+                Assert.Equal(z, z_dec);
             }
         }
 
@@ -69,12 +56,12 @@ namespace PaillierTests
         public void TestSpecificCases()
         {
             {
-                Paillier algorithm = new PaillierManaged
+                var algorithm = new Paillier
                 {
                     KeySize = 384
                 };
 
-                var z = new BigInteger(138);
+                var z = new BigFraction(BigInteger.Parse("1000"), BigInteger.Parse("1"));
 
                 var z_enc_bytes = algorithm.EncryptData(z);
                 var z_dec = algorithm.DecryptData(z_enc_bytes);
@@ -93,15 +80,15 @@ namespace PaillierTests
             {
                 for (var i = 0; i < iterations; i++)
                 {
-                    Paillier algorithm = new PaillierManaged
+                    var algorithm = new Paillier
                     {
                         KeySize = keySize
                     };
 
-                    Paillier encryptAlgorithm = new PaillierManaged();
+                    var encryptAlgorithm = new Paillier();
                     encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
 
-                    Paillier decryptAlgorithm = new PaillierManaged();
+                    var decryptAlgorithm = new Paillier();
                     decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
 
                     var A = new BigInteger(random.Next());
@@ -130,7 +117,7 @@ namespace PaillierTests
         {
             for (var keySize = 384; keySize <= 1088; keySize += 8)
             {
-                Paillier algorithm = new PaillierManaged
+                var algorithm = new Paillier
                 {
                     KeySize = keySize
                 };
@@ -145,7 +132,97 @@ namespace PaillierTests
 
                 var sums = algorithm.DecryptData(sum);
 
-                Assert.Equal(new BigInteger(1000), sums);
+                Assert.Equal(sums, new BigInteger(1000));
+            }
+        }
+
+        [Fact(DisplayName = "Negative cases")]
+        public void TestNegativeCases()
+        {
+            {
+                var algorithm = new Paillier
+                {
+                    KeySize = 384
+                };
+
+                //Test negative number
+                var z = new BigInteger(-600000000000000000);
+                var z_enc_bytes = algorithm.EncryptData(z);
+                var z_dec = algorithm.DecryptData(z_enc_bytes);
+                Assert.Equal(z, z_dec);
+
+                //Test positive number
+                var z_2 = new BigInteger(6);
+                var z_enc_bytes_2 = algorithm.EncryptData(z_2);
+                var z_dec_2 = algorithm.DecryptData(z_enc_bytes_2);
+                Assert.Equal(z_2, z_dec_2);
+
+                //Test addition of positive and negative numbers
+                var z_enc_addition = algorithm.Addition(z_enc_bytes, z_enc_bytes_2);
+                var z_addition = algorithm.DecryptData(z_enc_addition);
+                Assert.Equal(z + z_2, z_addition);
+            }
+        }
+
+        [Fact(DisplayName = "Floating point")]
+        public void TestFloatingPoint()
+        {
+            {
+                var algorithm = new Paillier
+                {
+                    KeySize = 384
+                };
+
+                //Test 1 decimal place
+                var z = new BigFraction(BigInteger.Parse("1"), BigInteger.Parse("10"));
+                var z_enc_bytes = algorithm.EncryptData(z);
+                var z_dec = algorithm.DecryptData(z_enc_bytes);
+                Assert.Equal(z, z_dec);
+
+                //Test 0 < plaintext < 1
+                var z_3 = new BigFraction(BigInteger.Parse("1"), BigInteger.Parse("100"));
+                var z_3_enc_bytes = algorithm.EncryptData(z_3);
+                var z_3_dec = algorithm.DecryptData(z_3_enc_bytes);
+                Assert.Equal(z_3, z_3_dec);
+
+                //Test plaintext > 1
+                var z_2 = new BigFraction(BigInteger.Parse("10000000001"), BigInteger.Parse("100"));
+                var z_2_enc_bytes = algorithm.EncryptData(z_2);
+                var z_2_dec = algorithm.DecryptData(z_2_enc_bytes);
+                Assert.Equal(z_2, z_2_dec);
+
+                //Test addition
+                var z_enc_addition = algorithm.Addition(z_enc_bytes, z_2_enc_bytes);
+                var z_addition = algorithm.DecryptData(z_enc_addition);
+                Assert.Equal(z + z_2, z_addition);
+            }
+        }
+
+        [Fact(DisplayName = "Negative Floating point")]
+        public void TestNegativeFloatingPoint()
+        {
+            {
+                var algorithm = new Paillier
+                {
+                    KeySize = 384
+                };
+
+                //Test 0 > plaintext > -1
+                var z = new BigFraction(BigInteger.Parse("-1001"), BigInteger.Parse("100"));
+                var z_enc_bytes = algorithm.EncryptData(z);
+                var z_dec = algorithm.DecryptData(z_enc_bytes);
+                Assert.Equal(z, z_dec);
+
+                //Test plaintext < -1
+                var z_2 = new BigFraction(BigInteger.Parse("-1000000001"), BigInteger.Parse("100"));
+                var z_2_enc_bytes = algorithm.EncryptData(z_2);
+                var z_2_dec = algorithm.DecryptData(z_2_enc_bytes);
+                Assert.Equal(z_2, z_2_dec);
+
+                //Test addition
+                var z_enc_addition = algorithm.Addition(z_enc_bytes, z_2_enc_bytes);
+                var z_addition = algorithm.DecryptData(z_enc_addition);
+                Assert.Equal(z + z_2, z_addition);
             }
         }
     }
