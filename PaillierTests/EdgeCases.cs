@@ -1,5 +1,4 @@
-﻿using Aprismatic.BigFraction;
-using System;
+﻿using System;
 using System.Numerics;
 using System.Security.Cryptography;
 using PaillierExt;

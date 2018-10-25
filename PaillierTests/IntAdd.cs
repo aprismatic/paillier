@@ -1,5 +1,4 @@
-﻿using Aprismatic.BigFraction;
-using Aprismatic.BigIntegerExt;
+﻿using Aprismatic.BigIntegerExt;
 using System;
 using System.Numerics;
 using System.Security.Cryptography;
