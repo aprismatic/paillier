@@ -9,14 +9,14 @@ using Xunit.Abstractions;
 
 namespace PaillierTests
 {
-    public class FracEncDec : IDisposable
+    public class FpEncDec : IDisposable
     {
         private readonly ITestOutputHelper output;
 
         private readonly Random rnd = new Random();
         private readonly RandomNumberGenerator rng = new RNGCryptoServiceProvider();
 
-        public FracEncDec(ITestOutputHelper output)
+        public FpEncDec(ITestOutputHelper output)
         {
             this.output = output;
         }
@@ -26,7 +26,7 @@ namespace PaillierTests
             rng.Dispose();
         }
 
-        [Fact(DisplayName = "FRAC (ENC/DEC, +-)")]
+        [Fact(DisplayName = "FP (ENC/DEC, +-)")]
         public void TestRandomBigFraction()
         {
             for (var i = 0; i < Globals.iterations; i++)

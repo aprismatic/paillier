@@ -9,14 +9,14 @@ using Xunit.Abstractions;
 
 namespace PaillierTests
 {
-    public class FracAdd : IDisposable
+    public class FpAdd : IDisposable
     {
         private readonly ITestOutputHelper output;
 
         private readonly Random rnd = new Random();
         private readonly RandomNumberGenerator rng = new RNGCryptoServiceProvider();
 
-        public FracAdd(ITestOutputHelper output)
+        public FpAdd(ITestOutputHelper output)
         {
             this.output = output;
         }
@@ -26,7 +26,7 @@ namespace PaillierTests
             rng.Dispose();
         }
 
-        [Fact(DisplayName = "FRAC (ADD, +-)")]
+        [Fact(DisplayName = "FP (ADD, +-)")]
         public void TestMultiplication_BatchFrac()
         {
             var rnd = new Random();

@@ -100,7 +100,7 @@ namespace PaillierTests
             }
         }
 
-        [Fact(DisplayName = "Simple fractions")]
+        [Fact(DisplayName = "Simple floating point")]
         public void TestFloatingPoint()
         {
             {
@@ -136,7 +136,7 @@ namespace PaillierTests
             }
         }
 
-        [Fact(DisplayName = "Simple negative fractions")]
+        [Fact(DisplayName = "Simple negative floating point")]
         public void TestNegativeFloatingPoint()
         {
             {
