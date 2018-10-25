@@ -8,13 +8,14 @@
  ************************************************************************************/
 
 using System.Numerics;
-using System;
 
 namespace PaillierExt
 {
     public class PaillierDecryptor : PaillierAbstractCipher
     {
-        private static readonly BigInteger max = new BigInteger(UInt64.MaxValue);
+        private static readonly BigInteger max = BigInteger.Pow(2, PaillierConfig.size) - BigInteger.One;
+        private static readonly BigInteger exponent = BigInteger.Pow(10, PaillierConfig.exponent);    //Exponent of 100 to work with 2 decimal places
+
         public PaillierDecryptor(PaillierKeyStruct p_struct)
             : base(p_struct)
         {
@@ -22,7 +23,7 @@ namespace PaillierExt
         }
 
         //TODO: check again for decryption
-        public BigInteger ProcessByteBlock(byte[] p_block)
+        public BigFraction ProcessByteBlock(byte[] p_block)
         {
             var block = new BigInteger(p_block);
 
@@ -33,11 +34,12 @@ namespace PaillierExt
             return Decode(m);
         }
 
-        private BigInteger Decode(BigInteger a)
+        private BigFraction Decode(BigInteger n)
         {
+            var a = new BigFraction(n, exponent);
             a = a % (max + 1);
             if ( a > max / 2)
-                return a - max - 1;
+                a = a - max - 1;
             return a;
         }
     }

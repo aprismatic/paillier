@@ -7,10 +7,6 @@
  [1] The MIT License (MIT), website, (http://opensource.org/licenses/MIT)
  ************************************************************************************/
 
-using System;
-using System.IO;
-using System.Numerics;
-
 namespace PaillierExt
 {
     public abstract class PaillierAbstractCipher

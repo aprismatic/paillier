@@ -95,7 +95,7 @@ namespace PaillierExt
             }
         }
 
-        public byte[] EncryptData(BigInteger p_data)
+        public byte[] EncryptData(BigFraction p_data)
         {
             if (NeedToGenerateKey())
             {
@@ -108,7 +108,7 @@ namespace PaillierExt
             }
         }
 
-        public BigInteger DecryptData(byte[] p_data)
+        public BigFraction DecryptData(byte[] p_data)
         {
             if (NeedToGenerateKey())
             {

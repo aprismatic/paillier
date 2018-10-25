@@ -1,8 +1,6 @@
-﻿using BigIntegerExt;
-using PaillierExt;
+﻿using PaillierExt;
 using System;
 using System.Numerics;
-using System.Security.Cryptography;
 using Xunit;
 using Numerics;
 
@@ -10,6 +8,7 @@ namespace PaillierTests
 {
     public class PaillierEncryptionTests
     {
+
         [Fact(DisplayName = "Zero")]
         public void TestZero()
         {
@@ -23,45 +22,33 @@ namespace PaillierTests
                 encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
                 var decryptAlgorithm = new Paillier();
                 decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
-                var z = new BigInteger(0);
+                BigFraction z = new BigInteger(0);
                 var z_enc_bytes = encryptAlgorithm.EncryptData(z);
-                var z_dec = decryptAlgorithm.DecryptData(z_enc_bytes);
+                BigFraction z_dec = decryptAlgorithm.DecryptData(z_enc_bytes);
+
                 Assert.Equal(z, z_dec);
             }
         }
 
-        [Fact(DisplayName = "Random BigIntegers")]
-        public void TestRandomBigIntegers()
+        [Fact(DisplayName = "Large BigIntegers")]
+        public void TestLargeBigIntegers()
         {
-            var iterations = 10;
-            var rnd = new Random();
-            var rng = new RNGCryptoServiceProvider();
-
             for (var keySize = 384; keySize <= 1088; keySize += 8)
             {
-                for (var i = 0; i < iterations; i++)
+                var algorithm = new Paillier
                 {
-                    var algorithm = new Paillier
-                    {
-                        KeySize = keySize
-                    };
+                    KeySize = keySize
+                };
 
-                    var encryptAlgorithm = new Paillier();
-                    encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
+                //9 hundred trillion
+                var t = new BigInteger(900000000000000);
 
-                    var decryptAlgorithm = new Paillier();
-                    decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
+                BigFraction z = t;
 
-                    var z = new BigInteger();
+                var z_enc_bytes = algorithm.EncryptData(z);
+                var z_dec = algorithm.DecryptData(z_enc_bytes);
 
-                    // Plaintext that is bigger than one block requires different padding (e.g. ANSIX923 or PKCS97)
-                    z = z.GenRandomBits(rnd.Next(2, (algorithm as Paillier).KeyStruct.getPlaintextBlocksize() * 8), rng);
-
-                    var z_enc_bytes = encryptAlgorithm.EncryptData(z);
-                    var z_dec = decryptAlgorithm.DecryptData(z_enc_bytes);
-
-                    Assert.Equal(z, z_dec);
-                }
+                Assert.Equal(z, z_dec);
             }
         }
 
@@ -75,7 +62,7 @@ namespace PaillierTests
                     KeySize = 384
                 };
 
-                var z = new BigInteger(138);
+                var z = new BigFraction(BigInteger.Parse("1000"), BigInteger.Parse("1"));
 
                 var z_enc_bytes = algorithm.EncryptData(z);
                 var z_dec = algorithm.DecryptData(z_enc_bytes);
@@ -146,7 +133,7 @@ namespace PaillierTests
 
                 var sums = algorithm.DecryptData(sum);
 
-                Assert.Equal(new BigInteger(1000), sums);
+                Assert.Equal(sums, new BigInteger(1000));
             }
         }
 
@@ -159,116 +146,85 @@ namespace PaillierTests
                     KeySize = 384
                 };
 
-                var z = new BigInteger(-6);
+                //Test negative number
+                var z = new BigInteger(-600000000000000000);
                 var z_enc_bytes = algorithm.EncryptData(z);
                 var z_dec = algorithm.DecryptData(z_enc_bytes);
                 Assert.Equal(z, z_dec);
 
-
-                var z_2 = new BigInteger(4);
+                //Test positive number
+                var z_2 = new BigInteger(6);
                 var z_enc_bytes_2 = algorithm.EncryptData(z_2);
                 var z_dec_2 = algorithm.DecryptData(z_enc_bytes_2);
                 Assert.Equal(z_2, z_dec_2);
 
+                //Test addition of positive and negative numbers
                 var z_enc_addition = algorithm.Addition(z_enc_bytes, z_enc_bytes_2);
                 var z_addition = algorithm.DecryptData(z_enc_addition);
                 Assert.Equal(z + z_2, z_addition);
             }
         }
 
-		[Fact(DisplayName = "Floating point")]
-		public void TestFloatingPoint()
-		{
-			{
-				var algorithm = new Paillier
-				{
-					KeySize = 384
-				};
+        [Fact(DisplayName = "Floating point")]
+        public void TestFloatingPoint()
+        {
+            {
+                var algorithm = new Paillier
+                {
+                    KeySize = 384
+                };
 
-				/**
-				 *Test 1 decimal place
+                //Test 1 decimal place
+                var z = new BigFraction(BigInteger.Parse("1"), BigInteger.Parse("10"));
+                var z_enc_bytes = algorithm.EncryptData(z);
+                var z_dec = algorithm.DecryptData(z_enc_bytes);
+                Assert.Equal(z, z_dec);
 
-				 **/
+                //Test 0 < plaintext < 1
+                var z_3 = new BigFraction(BigInteger.Parse("1"), BigInteger.Parse("100"));
+                var z_3_enc_bytes = algorithm.EncryptData(z_3);
+                var z_3_dec = algorithm.DecryptData(z_3_enc_bytes);
+                Assert.Equal(z_3, z_3_dec);
 
-				var z = new BigRational(new Decimal(0.1));
+                //Test plaintext > 1
+                var z_2 = new BigFraction(BigInteger.Parse("10000000001"), BigInteger.Parse("100"));
+                var z_2_enc_bytes = algorithm.EncryptData(z_2);
+                var z_2_dec = algorithm.DecryptData(z_2_enc_bytes);
+                Assert.Equal(z_2, z_2_dec);
 
-				//Convert fraction to whole number. Denominator will be the exponent
-				var z_whole = z.Numerator;
-				var z_exponent = z.Denominator;
+                //Test addition
+                var z_enc_addition = algorithm.Addition(z_enc_bytes, z_2_enc_bytes);
+                var z_addition = algorithm.DecryptData(z_enc_addition);
+                Assert.Equal(z + z_2, z_addition);
+            }
+        }
 
-				//Encrypt and decrypt
-				var z_enc_bytes = algorithm.EncryptData(z_whole);
-				var z_dec = algorithm.DecryptData(z_enc_bytes);
+        [Fact(DisplayName = "Negative Floating point")]
+        public void TestNegativeFloatingPoint()
+        {
+            {
+                var algorithm = new Paillier
+                {
+                    KeySize = 384
+                };
 
-				//Reconvert back to fraction
-				var z_dec_float = new BigRational(z_dec, z_exponent);
+                //Test 0 > plaintext > -1
+                var z = new BigFraction(BigInteger.Parse("-1001"), BigInteger.Parse("100"));
+                var z_enc_bytes = algorithm.EncryptData(z);
+                var z_dec = algorithm.DecryptData(z_enc_bytes);
+                Assert.Equal(z, z_dec);
 
-				Assert.Equal(z, z_dec_float);
+                //Test plaintext < -1
+                var z_2 = new BigFraction(BigInteger.Parse("-1000000001"), BigInteger.Parse("100"));
+                var z_2_enc_bytes = algorithm.EncryptData(z_2);
+                var z_2_dec = algorithm.DecryptData(z_2_enc_bytes);
+                Assert.Equal(z_2, z_2_dec);
 
-
-
-
-				/**
-				 *Test 2 decimal places
-
-				 **/
-
-				var z_2 = new BigRational(new Decimal(0.02));
-
-				//Convert fraction to whole number. Denominator will be the exponent
-				var z_2_whole = z_2.Numerator;
-				var z_2_exponent = z_2.Denominator;
-
-				//Encrypt and decrypt
-				var z_enc_bytes_2 = algorithm.EncryptData(z_2_whole);
-				var z_dec_2 = algorithm.DecryptData(z_enc_bytes_2);
-
-				//Reconvert back to fraction
-				var z_dec_2_float = new BigRational(z_dec_2, z_2_exponent);
-
-				Assert.Equal(z_2, z_dec_2_float);
-
-
-
-				/**
-                 *  Test addition of 2 floats with different decimal places
-                 * */
-
-				z = new BigRational(new Decimal(0.1));
-				z_2 = new BigRational(new Decimal(0.02));
-
-				//For addition, the exponent of both plain text needs to be the same
-				var common_exponent = new BigInteger(1);
-
-				//The larger exponent among the 2 floats will be used as the common exponent
-				if (z.Denominator.CompareTo(z_2.Denominator) == 1)
-				{
-					common_exponent = z.Denominator;
-				}
-				else
-				{
-					common_exponent = z_2.Denominator;
-				}
-
-				//Convert fraction to whole number
-				z_whole = z.Numerator * (common_exponent / z.Denominator);
-				z_2_whole = z_2.Numerator * (common_exponent / z_2.Denominator);
-
-				//Encrypt
-				z_enc_bytes = algorithm.EncryptData(z_whole);
-				z_enc_bytes_2 = algorithm.EncryptData(z_2_whole);
-
-				//Addition
-				var z_enc_addition = algorithm.Addition(z_enc_bytes, z_enc_bytes_2);
-
-				//Decrypt
-				var z_addition = algorithm.DecryptData(z_enc_addition);
-
-				//Convert to fraction
-				var z_addition_fraction = new BigRational(z_addition, common_exponent);
-
-				Assert.Equal(z + z_2, z_addition_fraction);
-			}
-		}
-	}
+                //Test addition
+                var z_enc_addition = algorithm.Addition(z_enc_bytes, z_2_enc_bytes);
+                var z_addition = algorithm.DecryptData(z_enc_addition);
+                Assert.Equal(z + z_2, z_addition);
+            }
+        }
+    }
 }

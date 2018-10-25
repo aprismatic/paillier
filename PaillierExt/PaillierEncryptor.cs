@@ -16,7 +16,9 @@ namespace PaillierExt
 {
     public class PaillierEncryptor : PaillierAbstractCipher, IDisposable
     {
-        private static readonly BigInteger max = new BigInteger(UInt64.MaxValue);
+        private static readonly BigInteger max = BigInteger.Pow(2, PaillierConfig.size) -BigInteger.One;
+        private static readonly BigInteger exponent = BigInteger.Pow(10, PaillierConfig.exponent);    
+
         private RandomNumberGenerator o_random;
 
         public PaillierEncryptor(PaillierKeyStruct p_struct)
@@ -25,7 +27,7 @@ namespace PaillierExt
             o_random = RandomNumberGenerator.Create();
         }
 
-        public byte[] ProcessBigInteger(BigInteger message)
+        public byte[] ProcessBigInteger(BigFraction message)
         {
             // generate random R
             var R = new BigInteger();
@@ -49,11 +51,12 @@ namespace PaillierExt
             return x_result;
         }
 
-        private BigInteger Encode(BigInteger a)
+        private BigInteger Encode(BigFraction a)
         {
             if (a < 0)
-                return a + max + 1;
-            return a;
+                a = a + max + 1;
+            a = a * exponent;
+            return a.ToBigInteger();
         }
 
         public void Dispose()
