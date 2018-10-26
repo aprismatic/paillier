@@ -44,7 +44,7 @@ namespace PaillierTests
                     decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
 
                     var n = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.KeyStruct.getMaxPlaintextBits() - 1), rng);
-                    var d = ((rnd.Next() % 2) + 1) * 10;
+                    var d = new BigInteger(Math.Pow(10, (rnd.Next() % algorithm.KeyStruct.getPlaintextDecPlace()) + 1));
                     var f = new BigFraction(n, d);
                     if (rnd.Next() % 2 == 0) // random sign
                         f *= -1;

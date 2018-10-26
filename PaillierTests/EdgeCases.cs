@@ -51,11 +51,17 @@ namespace PaillierTests
                 var r_enc = encryptAlgorithm.EncryptData(r);
                 var zar_enc = decryptAlgorithm.Add(z_enc, r_enc);
                 var raz_enc = decryptAlgorithm.Add(r_enc, z_enc);
+                var zsr_enc = decryptAlgorithm.Subtract(z_enc, r_enc);
+                var rsz_enc = decryptAlgorithm.Subtract(r_enc, z_enc);
                 var zar = decryptAlgorithm.DecryptData(zar_enc);
                 var raz = decryptAlgorithm.DecryptData(raz_enc);
+                var zsr = decryptAlgorithm.DecryptData(zsr_enc);
+                var rsz = decryptAlgorithm.DecryptData(rsz_enc);
 
                 Assert.Equal(r, zar);
                 Assert.Equal(r, raz);
+                Assert.Equal(0-r, zsr);
+                Assert.Equal(r, rsz);
 
                 algorithm.Dispose();
                 encryptAlgorithm.Dispose();
@@ -66,7 +72,7 @@ namespace PaillierTests
         [Fact(DisplayName = "Edge values")]
         public void MinAndMaxValues()
         {
-            var max = BigInteger.Pow(2, 255) - 1; // should work
+            var max = BigInteger.Pow(2, 127) - 1; // should work
             var max_plus = max + 1; // should throw
             var min = -max; // should work
             var min_minus = min - 1; // should throw

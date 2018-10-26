@@ -78,7 +78,7 @@ namespace PaillierTests
 
                     var baa_enc = decryptAlgorithm.Add(b_enc, a_enc); // verify transitivity
                     var baa_dec = decryptAlgorithm.DecryptData(baa_enc);
-                    Assert.True(baa_dec == a + b, $"{Environment.NewLine}{Environment.NewLine}" +
+                    Assert.True(baa_dec == b + a, $"{Environment.NewLine}{Environment.NewLine}" +
                                                   $"Algorithm parameters (TRUE):{Environment.NewLine}" +
                                                   $"{algorithm.ToXmlString(true)}{Environment.NewLine}{Environment.NewLine}" +
                                                   $"a       : {a}{Environment.NewLine}{Environment.NewLine}" +

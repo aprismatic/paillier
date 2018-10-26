@@ -51,13 +51,13 @@ namespace PaillierTests
                     do
                     {
                         var n = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.KeyStruct.getMaxPlaintextBits() / 4), rng);
-                        var d = ((rnd.Next() % 2) + 1) * 10;
+                        var d = new BigInteger(Math.Pow(10, (rnd.Next() % algorithm.KeyStruct.getPlaintextDecPlace()) + 1));
                         a = new BigFraction(n, d);
                     } while (a == 0);
                     do
                     {
                         var n = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.KeyStruct.getMaxPlaintextBits() / 4), rng);
-                        var d = ((rnd.Next() % 2) + 1) * 10;
+                        var d = new BigInteger(Math.Pow(10, (rnd.Next() % algorithm.KeyStruct.getPlaintextDecPlace()) + 1));
                         b = new BigFraction(n, d);
                     } while (b == 0);
 
@@ -83,7 +83,7 @@ namespace PaillierTests
 
                     var baa_enc = decryptAlgorithm.Add(b_enc, a_enc); // verify transitivity
                     var baa_dec = decryptAlgorithm.DecryptData(baa_enc);
-                    Assert.True(baa_dec == a + b, $"{Environment.NewLine}{Environment.NewLine}" +
+                    Assert.True(baa_dec == b + a, $"{Environment.NewLine}{Environment.NewLine}" +
                                                   $"Algorithm parameters (TRUE):{Environment.NewLine}" +
                                                   $"{algorithm.ToXmlString(true)}{Environment.NewLine}{Environment.NewLine}" +
                                                   $"a       : {a}{Environment.NewLine}{Environment.NewLine}" +

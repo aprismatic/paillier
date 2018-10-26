@@ -57,12 +57,12 @@ namespace Aprismatic.PaillierExt
 
         public int getMaxPlaintextBits()
         {
-            return 256; // 256 bit 
+            return 128; // 128 bit 
         }
 
         public int getPlaintextDecPlace()
         {
-            return 2; // 2 decimal places allowed in plain text
+            return 12; // 12 decimal places allowed in plain text
         }
 
         // TODO: check again ciphertext and plaintext block size
