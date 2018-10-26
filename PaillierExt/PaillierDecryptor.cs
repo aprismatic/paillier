@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 using Aprismatic.BigFraction;
 
@@ -13,7 +14,9 @@ namespace PaillierExt
         //TODO: check again for decryption
         public BigFraction ProcessByteBlock(byte[] block)
         {
-            var bBlock = new BigInteger(block);
+            var block_half = new byte[block.Length / 2];
+            Array.Copy(block, block_half, block.Length / 2);
+            var bBlock = new BigInteger(block_half);
 
             // calculate M
             // m = (c^lambda(mod nsquare) - 1) / n * miu (mod n)

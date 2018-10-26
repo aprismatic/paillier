@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Linq;
@@ -109,7 +109,12 @@ namespace PaillierExt
 
         public byte[] Addition(byte[] first, byte[] second)
         {
-            return Homomorphism.PaillierHomomorphism.Addition(first, second, keyStruct.NSquare.ToByteArray());
+            return Aprismatic.PaillierExt.Homomorphism.PaillierHomomorphism.Addition(first, second, keyStruct.NSquare.ToByteArray());
+        }
+
+        public byte[] Subtraction(byte[] first, byte[] second)
+        {
+            return Aprismatic.PaillierExt.Homomorphism.PaillierHomomorphism.Subtraction(first, second, keyStruct.NSquare.ToByteArray());
         }
 
         public override string ToXmlString(bool includePrivateParameters)
