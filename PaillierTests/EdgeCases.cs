@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using System.Security.Cryptography;
-using PaillierExt;
+using Aprismatic.PaillierExt;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -49,8 +49,8 @@ namespace PaillierTests
                 Assert.Equal(z, z_dec);
 
                 var r_enc = encryptAlgorithm.EncryptData(r);
-                var zar_enc = decryptAlgorithm.Addition(z_enc, r_enc);
-                var raz_enc = decryptAlgorithm.Addition(r_enc, z_enc);
+                var zar_enc = decryptAlgorithm.Add(z_enc, r_enc);
+                var raz_enc = decryptAlgorithm.Add(r_enc, z_enc);
                 var zar = decryptAlgorithm.DecryptData(zar_enc);
                 var raz = decryptAlgorithm.DecryptData(raz_enc);
 

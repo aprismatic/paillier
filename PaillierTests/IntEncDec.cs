@@ -1,8 +1,8 @@
-﻿using Aprismatic.BigIntegerExt;
-using PaillierExt;
-using System;
+﻿using System;
 using System.Numerics;
 using System.Security.Cryptography;
+using Aprismatic;
+using Aprismatic.PaillierExt;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -1,7 +1,6 @@
 using System.Numerics;
-using Aprismatic.BigIntegerExt;
 
-namespace PaillierExt
+namespace Aprismatic.PaillierExt
 {
     public struct PaillierKeyStruct
     {

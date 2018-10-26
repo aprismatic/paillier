@@ -1,22 +1,21 @@
-﻿using Aprismatic.BigFraction;
-using Aprismatic.BigIntegerExt;
-using System;
+﻿using System;
 using System.Numerics;
 using System.Security.Cryptography;
-using PaillierExt;
+using Aprismatic;
+using Aprismatic.PaillierExt;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace PaillierTests
 {
-    public class FpAdd : IDisposable
+    public class FpAddSub : IDisposable
     {
         private readonly ITestOutputHelper output;
 
         private readonly Random rnd = new Random();
         private readonly RandomNumberGenerator rng = new RNGCryptoServiceProvider();
 
-        public FpAdd(ITestOutputHelper output)
+        public FpAddSub(ITestOutputHelper output)
         {
             this.output = output;
         }
@@ -26,7 +25,7 @@ namespace PaillierTests
             rng.Dispose();
         }
 
-        [Fact(DisplayName = "FP (ADD, +-)")]
+        [Fact(DisplayName = "FP (ADD/SUB, +-)")]
         public void TestMultiplication_BatchFrac()
         {
             var rnd = new Random();
@@ -72,7 +71,7 @@ namespace PaillierTests
 
 
                     // Addition
-                    var aab_enc = decryptAlgorithm.Addition(a_enc, b_enc);
+                    var aab_enc = decryptAlgorithm.Add(a_enc, b_enc);
                     var aab_dec = decryptAlgorithm.DecryptData(aab_enc);
                     Assert.True(aab_dec == a + b, $"{Environment.NewLine}{Environment.NewLine}" +
                                                   $"Algorithm parameters (TRUE):{Environment.NewLine}" +
@@ -82,7 +81,7 @@ namespace PaillierTests
                                                   $"a + b   : {a + b}{Environment.NewLine}{Environment.NewLine}" +
                                                   $"aab_dec : {aab_dec}");
 
-                    var baa_enc = decryptAlgorithm.Addition(b_enc, a_enc); // verify transitivity
+                    var baa_enc = decryptAlgorithm.Add(b_enc, a_enc); // verify transitivity
                     var baa_dec = decryptAlgorithm.DecryptData(baa_enc);
                     Assert.True(baa_dec == a + b, $"{Environment.NewLine}{Environment.NewLine}" +
                                                   $"Algorithm parameters (TRUE):{Environment.NewLine}" +
@@ -91,6 +90,27 @@ namespace PaillierTests
                                                   $"b       : {b}{Environment.NewLine}{Environment.NewLine}" +
                                                   $"b + a   : {b + a}{Environment.NewLine}{Environment.NewLine}" +
                                                   $"baa_dec : {baa_dec}");
+
+                    // Subtraction
+                    var asb_enc = decryptAlgorithm.Subtract(a_enc, b_enc);
+                    var asb_dec = decryptAlgorithm.DecryptData(asb_enc);
+                    Assert.True(asb_dec == a - b, $"{Environment.NewLine}{Environment.NewLine}" +
+                                                  $"Algorithm parameters (TRUE):{Environment.NewLine}" +
+                                                  $"{algorithm.ToXmlString(true)}{Environment.NewLine}{Environment.NewLine}" +
+                                                  $"a       : {a}{Environment.NewLine}{Environment.NewLine}" +
+                                                  $"b       : {b}{Environment.NewLine}{Environment.NewLine}" +
+                                                  $"a - b   : {a - b}{Environment.NewLine}{Environment.NewLine}" +
+                                                  $"asb_dec : {asb_dec}");
+
+                    var bsa_enc = decryptAlgorithm.Subtract(b_enc, a_enc);
+                    var bsa_dec = decryptAlgorithm.DecryptData(bsa_enc);
+                    Assert.True(bsa_dec == b - a, $"{Environment.NewLine}{Environment.NewLine}" +
+                                                  $"Algorithm parameters (TRUE):{Environment.NewLine}" +
+                                                  $"{algorithm.ToXmlString(true)}{Environment.NewLine}{Environment.NewLine}" +
+                                                  $"a       : {a}{Environment.NewLine}{Environment.NewLine}" +
+                                                  $"b       : {b}{Environment.NewLine}{Environment.NewLine}" +
+                                                  $"b - a   : {b - a}{Environment.NewLine}{Environment.NewLine}" +
+                                                  $"bsa_dec : {bsa_dec}");
 
                     algorithm.Dispose();
                     encryptAlgorithm.Dispose();

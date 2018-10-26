@@ -1,4 +1,4 @@
-namespace PaillierExt
+namespace Aprismatic.PaillierExt
 {
     public abstract class PaillierAbstractCipher
     {

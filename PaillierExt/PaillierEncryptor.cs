@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Numerics;
 using System.Security.Cryptography;
-using Aprismatic.BigFraction;
-using Aprismatic.BigIntegerExt;
 
-namespace PaillierExt
+namespace Aprismatic.PaillierExt
 {
     public class PaillierEncryptor : PaillierAbstractCipher, IDisposable
     {

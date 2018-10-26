@@ -3,10 +3,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Linq;
 using System.Numerics;
-using Aprismatic.BigFraction;
-using Aprismatic.BigIntegerExt;
+using Aprismatic.PaillierExt.Homomorphism;
 
-namespace PaillierExt
+namespace Aprismatic.PaillierExt
 {
     public class Paillier : AsymmetricAlgorithm
     {
@@ -107,14 +106,14 @@ namespace PaillierExt
             return decryptor.ProcessByteBlock(p_data);
         }
 
-        public byte[] Addition(byte[] first, byte[] second)
+        public byte[] Add(byte[] first, byte[] second)
         {
-            return Aprismatic.PaillierExt.Homomorphism.PaillierHomomorphism.Addition(first, second, keyStruct.NSquare.ToByteArray());
+            return PaillierHomomorphism.Add(first, second, keyStruct.NSquare.ToByteArray());
         }
 
-        public byte[] Subtraction(byte[] first, byte[] second)
+        public byte[] Subtract(byte[] first, byte[] second)
         {
-            return Aprismatic.PaillierExt.Homomorphism.PaillierHomomorphism.Subtraction(first, second, keyStruct.NSquare.ToByteArray());
+            return PaillierHomomorphism.Subtract(first, second, keyStruct.NSquare.ToByteArray());
         }
 
         public override string ToXmlString(bool includePrivateParameters)

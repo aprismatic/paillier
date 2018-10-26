@@ -1,8 +1,8 @@
-﻿using PaillierExt;
-using System;
+﻿using System;
 using System.Numerics;
 using System.Security.Cryptography;
-using Aprismatic.BigFraction;
+using Aprismatic;
+using Aprismatic.PaillierExt;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -58,7 +58,7 @@ namespace PaillierTests
 
                     for (var i = 0; i < 1000; i++)
                     {
-                        sum = algorithm.Addition(sum, one);
+                        sum = algorithm.Add(sum, one);
                     }
 
                     var sums = algorithm.DecryptData(sum);
@@ -92,12 +92,12 @@ namespace PaillierTests
                 Assert.Equal(z_2, z_dec_2);
 
                 //Test addition of positive and negative numbers
-                var z_enc_addition = algorithm.Addition(z_enc_bytes, z_enc_bytes_2);
+                var z_enc_addition = algorithm.Add(z_enc_bytes, z_enc_bytes_2);
                 var z_addition = algorithm.DecryptData(z_enc_addition);
                 Assert.Equal(z + z_2, z_addition);
 
                 //Test subtraction of positive and negative numbers
-                var z_enc_subtraction = algorithm.Subtraction(z_enc_bytes, z_enc_bytes_2);
+                var z_enc_subtraction = algorithm.Subtract(z_enc_bytes, z_enc_bytes_2);
                 var z_subtraction = algorithm.DecryptData(z_enc_subtraction);
                 Assert.Equal(z - z_2, z_subtraction);
 
@@ -133,7 +133,7 @@ namespace PaillierTests
                 Assert.Equal(z_2, z_2_dec);
 
                 //Test addition
-                var z_enc_addition = algorithm.Addition(z_enc_bytes, z_2_enc_bytes);
+                var z_enc_addition = algorithm.Add(z_enc_bytes, z_2_enc_bytes);
                 var z_addition = algorithm.DecryptData(z_enc_addition);
                 Assert.Equal(z + z_2, z_addition);
 
@@ -163,7 +163,7 @@ namespace PaillierTests
                 Assert.Equal(z_2, z_2_dec);
 
                 //Test addition
-                var z_enc_addition = algorithm.Addition(z_enc_bytes, z_2_enc_bytes);
+                var z_enc_addition = algorithm.Add(z_enc_bytes, z_2_enc_bytes);
                 var z_addition = algorithm.DecryptData(z_enc_addition);
                 Assert.Equal(z + z_2, z_addition);
 

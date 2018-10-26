@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PaillierExt
+namespace Aprismatic.PaillierExt
 {
     [Serializable]
     public struct PaillierParameters

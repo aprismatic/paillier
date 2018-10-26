@@ -1,8 +1,7 @@
 using System;
 using System.Numerics;
-using Aprismatic.BigFraction;
 
-namespace PaillierExt
+namespace Aprismatic.PaillierExt
 {
     public class PaillierDecryptor : PaillierAbstractCipher
     {
