@@ -1,16 +1,6 @@
-/************************************************************************************
- This is an implementation of the Paillier encryption scheme with support for
- homomorphic addition.
-
- This library is provided as-is and is covered by the MIT License [1].
-
- [1] The MIT License (MIT), website, (http://opensource.org/licenses/MIT)
- ************************************************************************************/
-
 using System.Numerics;
-using BigIntegerExt;
 
-namespace PaillierExt
+namespace Aprismatic.PaillierExt
 {
     public struct PaillierKeyStruct
     {
@@ -30,12 +20,49 @@ namespace PaillierExt
         public BigInteger G;
         public BigInteger Lambda;
         public BigInteger Miu;
-        public PaillierPaddingMode Padding; // this parameter should be considered part of the public key
 
-
-        public int getPlaintextBlocksize()
+        private BigInteger _maxRawPT;
+        public BigInteger MaxRawPlaintext
         {
-            return (_n.BitCount() - 1) / 8;
+            get
+            {
+                if (_maxRawPT == BigInteger.Zero)
+                    _maxRawPT = BigInteger.Pow(2, getMaxPlaintextBits()) - BigInteger.One;
+                return _maxRawPT;
+            }
+        }
+
+        private BigInteger _maxRawPT_half;
+        public BigInteger MaxEncryptableValue
+        {
+            get
+            {
+                if (_maxRawPT_half == BigInteger.Zero)
+                    _maxRawPT_half = MaxRawPlaintext / 2;
+                return _maxRawPT_half;
+            }
+        }
+
+
+        private BigInteger _PTExp;
+        public BigInteger PlaintextExp
+        {
+            get
+            {
+                if (_PTExp == BigInteger.Zero)
+                    _PTExp = BigInteger.Pow(10, getPlaintextDecPlace());
+                return _PTExp;
+            }
+        }
+
+        public int getMaxPlaintextBits()
+        {
+            return 128; // 128 bit 
+        }
+
+        public int getPlaintextDecPlace()
+        {
+            return 12; // 12 decimal places allowed in plain text
         }
 
         // TODO: check again ciphertext and plaintext block size

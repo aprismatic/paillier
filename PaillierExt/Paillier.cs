@@ -1,75 +1,205 @@
-/************************************************************************************
- This is an implementation of the Paillier encryption scheme with support for
- homomorphic addition.
-
- This library is provided as-is and is covered by the MIT License [1].
-
- [1] The MIT License (MIT), website, (http://opensource.org/licenses/MIT)
- ************************************************************************************/
-
-using System;
+﻿using System;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Linq;
+using System.Numerics;
+using Aprismatic.PaillierExt.Homomorphism;
 
-namespace PaillierExt
+namespace Aprismatic.PaillierExt
 {
-    public enum PaillierPaddingMode : byte
+    public class Paillier : AsymmetricAlgorithm
     {
-        ANSIX923,
-        LeadingZeros,
-        TrailingZeros,
-        BigIntegerPadding
-    }
+        private PaillierKeyStruct keyStruct;
 
-    public abstract class Paillier : AsymmetricAlgorithm
-    {
-        public PaillierPaddingMode Padding;
-
-        public abstract void ImportParameters(PaillierParameters p_parameters);
-        public abstract PaillierParameters ExportParameters(bool p_include_private_params);
-        public abstract byte[] EncryptData(byte[] p_data);
-        public abstract byte[] DecryptData(byte[] p_data);
-        public abstract byte[] Sign(byte[] p_hashcode);
-        public abstract bool VerifySignature(byte[] p_hashcode, byte[] p_signature);
-
-        public abstract byte[] Addition(byte[] p_first, byte[] p_second);
-
-        public override string ToXmlString(bool p_include_private)
+        public PaillierKeyStruct KeyStruct
         {
-            var x_params = ExportParameters(p_include_private);
-            var x_sb = new StringBuilder();
-
-            x_sb.Append("<PaillierKeyValue>");
-
-            x_sb.Append("<N>" + Convert.ToBase64String(x_params.N) + "</N>");
-            x_sb.Append("<G>" + Convert.ToBase64String(x_params.G) + "</G>");
-            x_sb.Append("<Padding>" + x_params.Padding.ToString() + "</Padding>");
-
-            if (p_include_private)
+            get
             {
-                x_sb.Append("<Lambda>" + Convert.ToBase64String(x_params.Lambda) + "</Lambda>");
-                x_sb.Append("<Miu>" + Convert.ToBase64String(x_params.Miu) + "</Miu>");
+                if (NeedToGenerateKey())
+                {
+                    CreateKeyPair(KeySizeValue);
+                }
+                return keyStruct;
             }
-
-            x_sb.Append("</PaillierKeyValue>");
-
-            return x_sb.ToString();
+            set => keyStruct = value;
         }
 
-        public override void FromXmlString(string p_string)
+        public Paillier()
         {
-            var x_params = new PaillierParameters();
+            keyStruct = new PaillierKeyStruct
+            {
+                N = BigInteger.Zero,
+                G = BigInteger.Zero,
+                Lambda = BigInteger.Zero,
+                Miu = BigInteger.Zero
+            };
 
-            var keyValues = XDocument.Parse(p_string).Element("PaillierKeyValue");
+            // set the default key size value
+            KeySizeValue = 384;
 
-            x_params.N = Convert.FromBase64String((String)keyValues.Element("N") ?? "");
-            x_params.G = Convert.FromBase64String((String)keyValues.Element("G") ?? "");
-            x_params.Padding = (PaillierPaddingMode)Enum.Parse(typeof(PaillierPaddingMode), (String)keyValues.Element("Padding") ?? "");
-            x_params.Lambda = Convert.FromBase64String((String)keyValues.Element("Lambda") ?? "");
-            x_params.Miu = Convert.FromBase64String((String)keyValues.Element("Miu") ?? "");
+            // set the range of legal keys
+            LegalKeySizesValue = new[] { new KeySizes(384, 1088, 8) };
+        }
 
-            ImportParameters(x_params);
+        private bool NeedToGenerateKey()
+        {
+            return keyStruct.N == 0
+                && keyStruct.G == 0;
+        }
+
+        // TODO: check again for Miu
+        private void CreateKeyPair(int pKeyStrength)
+        {
+            // create the large prime number, p and q
+            // p and q are assumed to have the same bit length (512 bit each, so that N is 1024)
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                var p = new BigInteger();
+                var q = new BigInteger();
+
+                p = p.GenPseudoPrime(pKeyStrength / 2, 16, rng);
+                q = q.GenPseudoPrime(pKeyStrength / 2, 16, rng);
+
+                // compute N
+                // n = p*q
+                keyStruct.N = p * q;
+
+                // compute G
+                // First option: g is random in Z*(n^2)
+
+                // Second option: g = n + 1
+                keyStruct.G = keyStruct.N + 1;
+
+                // compute lambda
+                // lambda = lcm(p-1, q-1) = (p-1)*(q-1)/gcd(p-1, q-1)
+                // or simpler variant, lambda = (p-1)(q-1), since p and q have same length
+                keyStruct.Lambda = (p - 1) * (q - 1);
+
+                // Miu = (L(g^lambda mod NSq))^-1 mod n
+                // or simple: Miu = lambda^-1 (mod n)
+                keyStruct.Miu = keyStruct.Lambda.ModInverse(keyStruct.N);
+            }
+        }
+
+        public byte[] EncryptData(BigFraction message)
+        {
+            if (NeedToGenerateKey())
+            {
+                CreateKeyPair(KeySizeValue);
+            }
+
+            using (var encryptor = new PaillierEncryptor(keyStruct))
+            {
+                return encryptor.ProcessBigInteger(message);
+            }
+        }
+
+        public BigFraction DecryptData(byte[] p_data)
+        {
+            if (NeedToGenerateKey())
+            {
+                CreateKeyPair(KeySizeValue);
+            }
+
+            var decryptor = new PaillierDecryptor(keyStruct);
+
+            return decryptor.ProcessByteBlock(p_data);
+        }
+
+        public byte[] Add(byte[] first, byte[] second)
+        {
+            return PaillierHomomorphism.Add(first, second, keyStruct.NSquare.ToByteArray());
+        }
+
+        public byte[] Subtract(byte[] first, byte[] second)
+        {
+            return PaillierHomomorphism.Subtract(first, second, keyStruct.NSquare.ToByteArray());
+        }
+
+        public override string ToXmlString(bool includePrivateParameters)
+        {
+            var prms = ExportParameters(includePrivateParameters);
+            var sb = new StringBuilder();
+
+            sb.Append("<PaillierKeyValue>");
+
+            sb.Append("<N>" + Convert.ToBase64String(prms.N) + "</N>");
+            sb.Append("<G>" + Convert.ToBase64String(prms.G) + "</G>");
+
+            if (includePrivateParameters)
+            {
+                sb.Append("<Lambda>" + Convert.ToBase64String(prms.Lambda) + "</Lambda>");
+                sb.Append("<Miu>" + Convert.ToBase64String(prms.Miu) + "</Miu>");
+            }
+
+            sb.Append("</PaillierKeyValue>");
+
+            return sb.ToString();
+        }
+
+        public override void FromXmlString(string str)
+        {
+            var prms = new PaillierParameters();
+
+            var keyValues = XDocument.Parse(str).Element("PaillierKeyValue");
+
+            prms.N = Convert.FromBase64String((String)keyValues.Element("N") ?? "");
+            prms.G = Convert.FromBase64String((String)keyValues.Element("G") ?? "");
+            prms.Lambda = Convert.FromBase64String((String)keyValues.Element("Lambda") ?? "");
+            prms.Miu = Convert.FromBase64String((String)keyValues.Element("Miu") ?? "");
+
+            ImportParameters(prms);
+        }
+
+        public void ImportParameters(PaillierParameters parameters)
+        {
+            keyStruct.N = new BigInteger(parameters.N);
+            keyStruct.G = new BigInteger(parameters.G);
+
+            if (parameters.Lambda != null
+                && parameters.Lambda.Length > 0
+                && parameters.Miu != null
+                && parameters.Miu.Length > 0)
+            {
+                keyStruct.Lambda = new BigInteger(parameters.Lambda);
+                keyStruct.Miu = new BigInteger(parameters.Miu);
+            }
+            else
+            {
+                keyStruct.Lambda = BigInteger.Zero;
+                keyStruct.Miu = BigInteger.Zero;
+            }
+
+            KeySizeValue = keyStruct.N.BitCount();
+        }
+
+        public PaillierParameters ExportParameters(bool includePrivateParams)
+        {
+            if (NeedToGenerateKey())
+            {
+                CreateKeyPair(KeySizeValue);
+            }
+
+            var prms = new PaillierParameters
+            {
+                N = keyStruct.N.ToByteArray(),
+                G = keyStruct.G.ToByteArray(),
+            };
+
+            // if required, include the private value, X
+            if (includePrivateParams)
+            {
+                prms.Lambda = keyStruct.Lambda.ToByteArray();
+                prms.Miu = keyStruct.Miu.ToByteArray();
+            }
+            else
+            {
+                // ensure that we zero the value
+                prms.Lambda = new byte[1];
+                prms.Miu = new byte[1];
+            }
+
+            return prms;
         }
     }
 }

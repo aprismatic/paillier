@@ -1,99 +1,63 @@
-﻿/************************************************************************************
- This is an implementation of the Paillier encryption scheme with support for
- homomorphic addition.
-
- This library is provided as-is and is covered by the MIT License [1].
-
- [1] The MIT License (MIT), website, (http://opensource.org/licenses/MIT)
- ************************************************************************************/
-
-using BigIntegerExt;
-using System;
+﻿using System;
 using System.Numerics;
 using System.Security.Cryptography;
 
-namespace PaillierExt
+namespace Aprismatic.PaillierExt
 {
     public class PaillierEncryptor : PaillierAbstractCipher, IDisposable
     {
-        private RandomNumberGenerator o_random;
+        private RandomNumberGenerator rng;
 
-        public PaillierEncryptor(PaillierKeyStruct p_struct)
-            : base(p_struct)
+        public PaillierEncryptor(PaillierKeyStruct keyStruct)
+            : base(keyStruct)
         {
-            o_random = RandomNumberGenerator.Create();
+            rng = RandomNumberGenerator.Create();
         }
 
-        protected override byte[] ProcessDataBlock(byte[] p_block)
+        public byte[] ProcessBigInteger(BigFraction message)
         {
+            if (BigInteger.Abs(message.Numerator) > KeyStruct.MaxEncryptableValue)
+                throw new ArgumentException($"Numerator to encrypt is too large. Message should be |m| < 2^{KeyStruct.getMaxPlaintextBits() - 1}");
+
+            if (message.Denominator > KeyStruct.PlaintextExp)
+                throw new ArgumentException($"Denominator to encrypt is too large. Denominator should be <= {KeyStruct.PlaintextExp}");
+
             // generate random R
             var R = new BigInteger();
-            R = R.GenRandomBits(o_key_struct.N.BitCount() - 1, o_random); // R's bitlength is n-1 so that r is within Zn
+            R = R.GenRandomBits(KeyStruct.N.BitCount() - 1, rng); // R's bitlength is n-1 so that r is within Zn
 
             // ciphertext c = g^m * r^n mod n^2
-            var m = new BigInteger(p_block);
-            var Gm = BigInteger.ModPow(o_key_struct.G, m, o_key_struct.NSquare);
-            var RN = BigInteger.ModPow(R, o_key_struct.N, o_key_struct.NSquare);
+            var RN = BigInteger.ModPow(R, KeyStruct.N, KeyStruct.NSquare);
 
-            var C = (Gm * RN) % o_key_struct.NSquare;
+            // if we use simple key generation (g = n + 1), we can use
+            // (n+1)^m = n*m + 1  mod n^2
+            var Gm = (KeyStruct.N * Encode(message) + 1) % KeyStruct.NSquare;
+            var Gm_Neg = (KeyStruct.N * Encode(-message) + 1) % KeyStruct.NSquare;
 
-            var x_result = new byte[o_ciphertext_blocksize];
+            var C = (Gm * RN) % KeyStruct.NSquare;
+            var C_Neg = (Gm_Neg * RN) % KeyStruct.NSquare;
+
+            var res = new byte[CiphertextBlocksize * 2];
             var c_bytes = C.ToByteArray();
+            var c_Neg_bytes = C_Neg.ToByteArray();
 
-            Array.Copy(c_bytes, 0, x_result, 0, c_bytes.Length);
+            Array.Copy(c_bytes, 0, res, 0, c_bytes.Length);
+            Array.Copy(c_Neg_bytes, 0, res, CiphertextBlocksize, c_Neg_bytes.Length);
 
-            return x_result;
+            return res;
         }
 
-        protected override byte[] ProcessFinalDataBlock(byte[] p_final_block)
+        private BigInteger Encode(BigFraction a)
         {
-            return p_final_block.Length > 0 ? ProcessDataBlock(PadPlaintextBlock(p_final_block)) : new byte[0];
-        }
-
-        protected byte[] PadPlaintextBlock(byte[] p_block)
-        {
-            if (p_block.Length < o_block_size)
-            {
-                var x_padded = new byte[o_block_size];
-
-                switch (o_key_struct.Padding)
-                {
-                    case PaillierPaddingMode.TrailingZeros:
-                        Array.Copy(p_block, 0, x_padded, 0, p_block.Length);
-                        break;
-
-                    case PaillierPaddingMode.LeadingZeros:
-                        Array.Copy(p_block, 0, x_padded, o_block_size - p_block.Length, p_block.Length);
-                        break;
-
-                    case PaillierPaddingMode.ANSIX923:
-                        throw new NotImplementedException();
-                        break;
-
-                    case PaillierPaddingMode.BigIntegerPadding:
-                        Array.Copy(p_block, 0, x_padded, 0, p_block.Length);
-                        if ((p_block[p_block.Length - 1] & 0b1000_0000) != 0)
-                        {
-                            for (var i = p_block.Length; i < x_padded.Length; i++)
-                            {
-                                x_padded[i] = 0xFF;
-                            }
-                        }
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                return x_padded;
-            }
-
-            return p_block;
+            if (a < 0)
+                a = a + KeyStruct.MaxRawPlaintext + 1;
+            a = a * KeyStruct.PlaintextExp;
+            return a.ToBigInteger();
         }
 
         public void Dispose()
         {
-            o_random.Dispose();
+            rng.Dispose();
         }
     }
 }

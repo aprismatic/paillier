@@ -1,112 +1,34 @@
-/************************************************************************************
- This is an implementation of the Paillier encryption scheme with support for
- homomorphic addition.
-
- This library is provided as-is and is covered by the MIT License [1].
-
- [1] The MIT License (MIT), website, (http://opensource.org/licenses/MIT)
- ************************************************************************************/
-
 using System;
-using System.Linq;
 using System.Numerics;
 
-namespace PaillierExt
+namespace Aprismatic.PaillierExt
 {
     public class PaillierDecryptor : PaillierAbstractCipher
     {
-        public PaillierDecryptor(PaillierKeyStruct p_struct)
-            : base(p_struct)
-        {
-            o_block_size = o_ciphertext_blocksize;
-        }
+        public PaillierDecryptor(PaillierKeyStruct keyStruct)
+            : base(keyStruct)
+        { }
 
-        //TODO: check again for decryption
-        protected override byte[] ProcessDataBlock(byte[] p_block)
+        public BigFraction ProcessByteBlock(byte[] block)
         {
-            var block = new BigInteger(p_block);
+            var block_half = new byte[block.Length / 2];
+            Array.Copy(block, block_half, block.Length / 2);
+            var bBlock = new BigInteger(block_half);
 
             // calculate M
             // m = (c^lambda(mod nsquare) - 1) / n * miu (mod n)
-            var m = (BigInteger.ModPow(block, o_key_struct.Lambda, o_key_struct.NSquare) - 1) / o_key_struct.N * o_key_struct.Miu % o_key_struct.N;
-            var x_m_bytes = m.ToByteArray();
+            var m = (BigInteger.ModPow(bBlock, KeyStruct.Lambda, KeyStruct.NSquare) - 1) / KeyStruct.N * KeyStruct.Miu % KeyStruct.N;
 
-            // we may end up with results which are short some trailing zeros
-            if (x_m_bytes.Length < o_plaintext_blocksize)
-            {
-                var x_full_result = new byte[o_plaintext_blocksize];
-                Array.Copy(x_m_bytes, 0, x_full_result, 0, x_m_bytes.Length);
-                x_m_bytes = x_full_result;
-            }
-
-            return x_m_bytes;
+            return Decode(m);
         }
 
-        protected override byte[] ProcessFinalDataBlock(byte[] p_final_block)
+        private BigFraction Decode(BigInteger n)
         {
-            return p_final_block.Length > 0 ? UnpadPlaintextBlock(ProcessDataBlock(p_final_block)) : new byte[0];
-        }
-
-        protected byte[] UnpadPlaintextBlock(byte[] p_block)
-        {
-            var x_res = new byte[0];
-
-            switch (o_key_struct.Padding)
-            {
-                case PaillierPaddingMode.LeadingZeros:
-                    var i = 0;
-                    for (; i < p_block.Length; i++)
-                    {
-                        if (p_block[i] != 0)
-                            break;
-                    }
-                    x_res = p_block.Skip(i).ToArray(); // TODO: Consider rewriting without LINQ
-                    break;
-
-                case PaillierPaddingMode.TrailingZeros:
-                    var j = p_block.Length - 1;
-                    for (; j >= 0; j--)
-                    {
-                        if (p_block[j] != 0)
-                            break;
-                    }
-                    x_res = p_block.Take(j + 1).ToArray(); // TODO: Consider rewriting without LINQ
-                    break;
-
-                case PaillierPaddingMode.ANSIX923:
-                    throw new NotImplementedException();
-
-                case PaillierPaddingMode.BigIntegerPadding:
-                    var k = p_block.Length - 1;
-                    if (p_block[k] == 0xFF)
-                    {
-                        for (; k >= 0; k--)
-                        {
-                            if (p_block[k] == 0xFF) continue;
-                            if ((p_block[k] & 0b1000_0000) == 0)
-                                k++;
-                            break;
-                        }
-                    }
-                    else if (p_block[k] == 0)
-                    {
-                        for (; k >= 0; k--)
-                        {
-                            if (p_block[k] == 0) continue;
-                            if ((p_block[k] & 0b1000_0000) != 0)
-                                k++;
-                            break;
-                        }
-                    }
-                    x_res = p_block.Take(k + 1).ToArray(); // TODO: Consider rewriting without LINQ
-                    break;
-
-                // unlikely to happen
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            return x_res;
+            var a = new BigFraction(n, KeyStruct.PlaintextExp);
+            a = a % (KeyStruct.MaxRawPlaintext + 1);
+            if ( a > KeyStruct.MaxRawPlaintext / 2)
+                a = a - KeyStruct.MaxRawPlaintext - 1;
+            return a;
         }
     }
 }
