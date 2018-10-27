@@ -5,10 +5,10 @@ namespace Aprismatic.PaillierExt
         protected readonly int CiphertextBlocksize;
         protected PaillierKeyStruct KeyStruct;
 
-        public PaillierAbstractCipher(PaillierKeyStruct p_key_struct)
+        public PaillierAbstractCipher(PaillierKeyStruct keyStruct)
         {
-            KeyStruct = p_key_struct;
-            CiphertextBlocksize = p_key_struct.getCiphertextBlocksize();
+            KeyStruct = keyStruct;
+            CiphertextBlocksize = keyStruct.getCiphertextBlocksize();
         }
     }
 }

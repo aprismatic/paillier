@@ -35,7 +35,7 @@ namespace Aprismatic.PaillierExt
             };
 
             // set the default key size value
-            KeySizeValue = 1024;
+            KeySizeValue = 384;
 
             // set the range of legal keys
             LegalKeySizesValue = new[] { new KeySizes(384, 1088, 8) };
@@ -44,7 +44,7 @@ namespace Aprismatic.PaillierExt
         private bool NeedToGenerateKey()
         {
             return keyStruct.N == 0
-                   && keyStruct.G == 0;
+                && keyStruct.G == 0;
         }
 
         // TODO: check again for Miu

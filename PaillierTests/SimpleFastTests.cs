@@ -68,6 +68,49 @@ namespace PaillierTests
                     algorithm.Dispose();
                 }
             }
+
+            {
+                for (var keySize = 384; keySize <= 1088; keySize += 8)
+                {
+                    var algorithm = new Paillier
+                    {
+                        KeySize = keySize
+                    };
+
+                    var a = 123;
+                    var b = 234;
+                    var c = -765;
+                    var d = -345;
+
+                    var ae = algorithm.EncryptData(a);
+                    var be = algorithm.EncryptData(b);
+                    var ce = algorithm.EncryptData(c);
+                    var de = algorithm.EncryptData(d);
+
+                    var res = algorithm.Add(ae, be);
+                    Assert.Equal(a + b, algorithm.DecryptData(res));
+
+                    res = algorithm.Add(res, ce);
+                    Assert.Equal(a + b + c, algorithm.DecryptData(res));
+
+                    res = algorithm.Add(res, de);
+                    Assert.Equal(a + b + c + d, algorithm.DecryptData(res));
+
+                    res = algorithm.Subtract(res, be);
+                    Assert.Equal(a + c + d, algorithm.DecryptData(res));
+
+                    res = algorithm.Subtract(res, de);
+                    Assert.Equal(a + c, algorithm.DecryptData(res));
+
+                    res = algorithm.Subtract(res, ae);
+                    Assert.Equal(c, algorithm.DecryptData(res));
+
+                    res = algorithm.Subtract(res, ce);
+                    Assert.Equal(0, algorithm.DecryptData(res));
+
+                    algorithm.Dispose();
+                }
+            }
         }
 
         [Fact(DisplayName = "Simple negatives")]

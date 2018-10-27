@@ -7,10 +7,8 @@ namespace Aprismatic.PaillierExt
     {
         public PaillierDecryptor(PaillierKeyStruct keyStruct)
             : base(keyStruct)
-        {
-        }
+        { }
 
-        //TODO: check again for decryption
         public BigFraction ProcessByteBlock(byte[] block)
         {
             var block_half = new byte[block.Length / 2];
