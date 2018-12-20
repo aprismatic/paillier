@@ -65,10 +65,24 @@ namespace Aprismatic.PaillierExt
             return 12; // 12 decimal places allowed in plain text
         }
 
-        // TODO: check again ciphertext and plaintext block size
         public int getCiphertextBlocksize()
         {
-            return ((_n.BitCount() + 7) / 8) * 2 + 2;
+            return getMaxNLength() * 2 + 2;
+        }
+
+        public int getCiphertextLength()
+        {
+            return getCiphertextBlocksize() * 2;
+        }
+
+        public int getMaxNLength()
+        {
+            return (_n.BitCount() + 7) / 8;
+        }
+
+        public int getMaxNSquareLength()
+        {
+            return getMaxNLength() * 2;
         }
     }
 }
