@@ -67,7 +67,7 @@ namespace Aprismatic.PaillierExt
 
         public int getCiphertextBlocksize()
         {
-            return getMaxNLength() * 2 + 2;
+            return getNLength() * 2 + 2;
         }
 
         public int getCiphertextLength()
@@ -75,14 +75,14 @@ namespace Aprismatic.PaillierExt
             return getCiphertextBlocksize() * 2;
         }
 
-        public int getMaxNLength()
+        public int getNLength()
         {
             return (_n.BitCount() + 7) / 8;
         }
 
-        public int getMaxNSquareLength()
+        public int getNSquareLength()
         {
-            return getMaxNLength() * 2;
+            return getNLength() * 2;
         }
     }
 }
