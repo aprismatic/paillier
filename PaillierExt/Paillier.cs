@@ -52,17 +52,20 @@ namespace Aprismatic.PaillierExt
         {
             // create the large prime number, p and q
             // p and q are assumed to have the same bit length (512 bit each, so that N is 1024)
+            // if N length is not the same to KeySize, will regenerate p and q which will make a new N
             using (var rng = RandomNumberGenerator.Create())
             {
                 var p = new BigInteger();
                 var q = new BigInteger();
+                do
+                {
+                    p = p.GenPseudoPrime(pKeyStrength / 2, 16, rng);
+                    q = q.GenPseudoPrime(pKeyStrength / 2, 16, rng);
 
-                p = p.GenPseudoPrime(pKeyStrength / 2, 16, rng);
-                q = q.GenPseudoPrime(pKeyStrength / 2, 16, rng);
-
-                // compute N
-                // n = p*q
-                keyStruct.N = p * q;
+                    // compute N
+                    // N = p*q
+                    keyStruct.N = p * q;
+                } while (KeyStruct.getNLength() != pKeyStrength / 8);
 
                 // compute G
                 // First option: g is random in Z*(n^2)
