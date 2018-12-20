@@ -24,7 +24,7 @@ namespace PaillierTests
         }
 
         // TODO: Fix N length with respect to key size
-        // [Fact(DisplayName = "Lengths")]
+        [Fact(DisplayName = "Lengths")]
         public void TestLengths()
         {
             var rnd = new Random();
