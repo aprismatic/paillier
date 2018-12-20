@@ -23,7 +23,6 @@ namespace PaillierTests
             rng.Dispose();
         }
 
-        // TODO: Fix N length with respect to key size
         [Fact(DisplayName = "Lengths")]
         public void TestLengths()
         {
