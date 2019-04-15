@@ -16,11 +16,15 @@ namespace Aprismatic.PaillierExt
 
         public byte[] ProcessBigInteger(BigFraction message)
         {
+            if (message.Denominator > KeyStruct.PlaintextExp)
+            {
+                BigInteger denominator = KeyStruct.PlaintextExp;
+                BigInteger numerator = message.Numerator * denominator / message.Denominator;
+                message = new BigFraction(denominator, numerator);
+            }
+
             if (BigInteger.Abs(message.Numerator) > KeyStruct.MaxEncryptableValue)
                 throw new ArgumentException($"Numerator to encrypt is too large. Message should be |m| < 2^{KeyStruct.getMaxPlaintextBits() - 1}");
-
-            if (message.Denominator > KeyStruct.PlaintextExp)
-                throw new ArgumentException($"Denominator to encrypt is too large. Denominator should be <= {KeyStruct.PlaintextExp}");
 
             // generate random R
             var R = new BigInteger();
