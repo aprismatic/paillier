@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using Aprismatic;
 using System.Security.Cryptography;
 using Aprismatic.PaillierExt;
 using Xunit;
@@ -114,6 +115,37 @@ namespace PaillierTests
 
                 // MIN - 1
                 Assert.Throws<ArgumentException>(() => encryptAlgorithm.EncryptData(min_minus));
+
+                algorithm.Dispose();
+                encryptAlgorithm.Dispose();
+                decryptAlgorithm.Dispose();
+            }
+        }
+
+        [Fact(DisplayName = "Big Denominator")]
+        public void BigDenominator()
+        {
+            for (var keySize = 384; keySize <= 1088; keySize += 8)
+            {
+                var algorithm = new Paillier
+                {
+                    KeySize = keySize
+                };
+
+                var encryptAlgorithm = new Paillier();
+                encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
+
+                var decryptAlgorithm = new Paillier();
+                decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
+
+                var n = new BigInteger(10000);
+                var d = algorithm.KeyStruct.PlaintextExp * 2;
+                var f = new BigFraction(n, d);
+
+                var f_enc = encryptAlgorithm.EncryptData(f);
+                var f_dec = decryptAlgorithm.DecryptData(f_enc);
+
+                Assert.Equal(f, f_dec);
 
                 algorithm.Dispose();
                 encryptAlgorithm.Dispose();
