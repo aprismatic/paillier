@@ -20,7 +20,7 @@ namespace Aprismatic.PaillierExt
             {
                 BigInteger denominator = KeyStruct.PlaintextExp;
                 BigInteger numerator = message.Numerator * denominator / message.Denominator;
-                message = new BigFraction(denominator, numerator);
+                message = new BigFraction(numerator, denominator);
             }
 
             if (BigInteger.Abs(message.Numerator) > KeyStruct.MaxEncryptableValue)
