@@ -1,6 +1,6 @@
 # PaillierExt
 
-![Test .NET (Windows)](https://github.com/aprismatic/paillierext/workflows/Test%20.NET%20(Windows)/badge.svg)
+![Test .NET (Windows)](https://github.com/aprismatic/paillierext/workflows/Test%20.NET%20(Windows)/badge.svg?branch=master)
 
 Extension for the .NET Framework cryptography subsystem, which introduces the Paillier public key cryptosystem with support for homomorphic addition.
 
