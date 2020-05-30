@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Extension for the .NET Framework cryptography subsystem, which introduces the Paillier public key cryptosystem with support for homomorphic addition.</Description>
   </PropertyGroup>
   <ItemGroup>

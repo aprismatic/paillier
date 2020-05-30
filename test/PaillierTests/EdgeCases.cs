@@ -30,16 +30,10 @@ namespace PaillierTests
         {
             for (var keySize = 384; keySize <= 1088; keySize += 8)
             {
-                var algorithm = new Paillier
-                {
-                    KeySize = keySize
-                };
+                var algorithm = new Paillier(keySize);
 
-                var encryptAlgorithm = new Paillier();
-                encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
-
-                var decryptAlgorithm = new Paillier();
-                decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
+                var encryptAlgorithm = new Paillier(algorithm.ToXmlString(false));
+                var decryptAlgorithm = new Paillier(algorithm.ToXmlString(true));
 
                 var z = new BigInteger(0);
                 var r = new BigInteger(rnd.Next(1, 65536));
@@ -80,17 +74,10 @@ namespace PaillierTests
 
             for (var keySize = 384; keySize <= 1088; keySize += 8)
             {
-                var algorithm = new Paillier
-                {
-                    KeySize = keySize
-                };
+                var algorithm = new Paillier(keySize);
 
-                var encryptAlgorithm = new Paillier();
-                encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
-
-                var decryptAlgorithm = new Paillier();
-                decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
-
+                var encryptAlgorithm = new Paillier(algorithm.ToXmlString(false));
+                var decryptAlgorithm = new Paillier(algorithm.ToXmlString(true));
 
                 // MAX
                 var max_enc = encryptAlgorithm.EncryptData(max);
@@ -127,19 +114,13 @@ namespace PaillierTests
         {
             for (var keySize = 384; keySize <= 1088; keySize += 8)
             {
-                var algorithm = new Paillier
-                {
-                    KeySize = keySize
-                };
+                var algorithm = new Paillier(keySize);
 
-                var encryptAlgorithm = new Paillier();
-                encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
-
-                var decryptAlgorithm = new Paillier();
-                decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
+                var encryptAlgorithm = new Paillier(algorithm.ToXmlString(false));
+                var decryptAlgorithm = new Paillier(algorithm.ToXmlString(true));
 
                 var n = new BigInteger(10000);
-                var d = algorithm.KeyStruct.PlaintextExp * 2;
+                var d = algorithm.PlaintextExp * 2;
                 var f = new BigFraction(n, d);
 
                 var f_enc = encryptAlgorithm.EncryptData(f);

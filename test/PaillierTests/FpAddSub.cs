@@ -35,29 +35,22 @@ namespace PaillierTests
             {
                 for (var keySize = 384; keySize <= 1088; keySize += 8)
                 {
-                    var algorithm = new Paillier
-                    {
-                        KeySize = keySize
-                    };
+                    var algorithm = new Paillier(keySize);
 
-                    var encryptAlgorithm = new Paillier();
-                    encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
-
-                    var decryptAlgorithm = new Paillier();
-                    decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
-
+                    var encryptAlgorithm = new Paillier(algorithm.ToXmlString(false));
+                    var decryptAlgorithm = new Paillier(algorithm.ToXmlString(true));
 
                     BigFraction a, b;
                     do
                     {
-                        var n = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.KeyStruct.getMaxPlaintextBits() / 4), rng);
-                        var d = new BigInteger(Math.Pow(10, (rnd.Next() % algorithm.KeyStruct.getPlaintextDecPlace()) + 1));
+                        var n = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits() / 4), rng);
+                        var d = new BigInteger(Math.Pow(10, (rnd.Next() % algorithm.GetPlaintextDecPlace()) + 1));
                         a = new BigFraction(n, d);
                     } while (a == 0);
                     do
                     {
-                        var n = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.KeyStruct.getMaxPlaintextBits() / 4), rng);
-                        var d = new BigInteger(Math.Pow(10, (rnd.Next() % algorithm.KeyStruct.getPlaintextDecPlace()) + 1));
+                        var n = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits() / 4), rng);
+                        var d = new BigInteger(Math.Pow(10, (rnd.Next() % algorithm.GetPlaintextDecPlace()) + 1));
                         b = new BigFraction(n, d);
                     } while (b == 0);
 

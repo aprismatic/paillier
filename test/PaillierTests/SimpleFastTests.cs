@@ -29,10 +29,7 @@ namespace PaillierTests
         public void TestSpecificCases()
         {
             {
-                var algorithm = new Paillier
-                {
-                    KeySize = 384
-                };
+                var algorithm = new Paillier(384);
 
                 var z = new BigFraction(BigInteger.Parse("1000"), BigInteger.Parse("1"));
 
@@ -48,10 +45,7 @@ namespace PaillierTests
                 // based on https://github.com/bazzilic/PaillierExt/issues/15
                 for (var keySize = 384; keySize <= 1088; keySize += 8)
                 {
-                    var algorithm = new Paillier
-                    {
-                        KeySize = keySize
-                    };
+                    var algorithm = new Paillier(keySize);
 
                     var sum = algorithm.EncryptData(new BigInteger(0));
                     var one = algorithm.EncryptData(new BigInteger(1));
@@ -72,10 +66,7 @@ namespace PaillierTests
             {
                 for (var keySize = 384; keySize <= 1088; keySize += 8)
                 {
-                    var algorithm = new Paillier
-                    {
-                        KeySize = keySize
-                    };
+                    var algorithm = new Paillier(keySize);
 
                     var a = 123;
                     var b = 234;
@@ -117,10 +108,7 @@ namespace PaillierTests
         public void TestNegativeCases()
         {
             {
-                var algorithm = new Paillier
-                {
-                    KeySize = 384
-                };
+                var algorithm = new Paillier(384);
 
                 //Test negative number
                 var z = new BigInteger(8);
@@ -152,10 +140,7 @@ namespace PaillierTests
         public void TestFloatingPoint()
         {
             {
-                var algorithm = new Paillier
-                {
-                    KeySize = 384
-                };
+                var algorithm = new Paillier(384);
 
                 //Test 1 decimal place
                 var z = new BigFraction(BigInteger.Parse("1"), BigInteger.Parse("10"));
@@ -188,10 +173,7 @@ namespace PaillierTests
         public void TestNegativeFloatingPoint()
         {
             {
-                var algorithm = new Paillier
-                {
-                    KeySize = 384
-                };
+                var algorithm = new Paillier(384);
 
                 //Test 0 > plaintext > -1
                 var z = new BigFraction(BigInteger.Parse("-1001"), BigInteger.Parse("100"));
