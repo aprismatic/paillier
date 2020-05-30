@@ -33,7 +33,7 @@ namespace Aprismatic.PaillierExt
                 (prms.Miu?.Length ?? 0) > 0 ? new BigInteger(prms.Miu) : BigInteger.Zero
             );
 
-            KeySizeValue = keyStruct.NLength << 3;
+            KeySizeValue = keyStruct.NLength * 8;
 
             encryptor = new PaillierEncryptor(keyStruct);
             decryptor = new PaillierDecryptor(keyStruct);
@@ -57,7 +57,7 @@ namespace Aprismatic.PaillierExt
                 new BigInteger(prms.Miu)
             );
 
-            KeySizeValue = keyStruct.NLength << 3;
+            KeySizeValue = keyStruct.NLength * 8;
 
             encryptor = new PaillierEncryptor(keyStruct);
             decryptor = new PaillierDecryptor(keyStruct);
