@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Numerics;
 using System.Security.Cryptography;
+using Aprismatic;
 using Aprismatic.PaillierExt;
 using Xunit;
 using Xunit.Abstractions;
@@ -26,19 +28,15 @@ namespace PaillierTests
         [Fact(DisplayName = "Lengths")]
         public void TestLengths()
         {
-            var rnd = new Random();
-            var rng = new RNGCryptoServiceProvider();
-
             for (var i = 0; i < Globals.iterations; i++)
             {
                 for (var keySize = 384; keySize <= 1088; keySize += 8)
                 {
-                    var algorithm = new Paillier
-                    {
-                        KeySize = keySize
-                    };
+                    var algorithm = new Paillier(keySize);
+                    var prms = algorithm.ExportParameters(false);
+                    var bi = new BigInteger(prms.N);
 
-                    Assert.Equal(algorithm.KeySize / 8, algorithm.KeyStruct.getNLength());
+                    Assert.Equal(algorithm.KeySize / 8, (bi.BitCount() + 7) / 8);
 
                     algorithm.Dispose();
                 }

@@ -35,25 +35,19 @@ namespace PaillierTests
             {
                 for (var keySize = 384; keySize <= 1088; keySize += 8)
                 {
-                    var algorithm = new Paillier
-                    {
-                        KeySize = keySize
-                    };
+                    var algorithm = new Paillier(keySize);
 
-                    var encryptAlgorithm = new Paillier();
-                    encryptAlgorithm.FromXmlString(algorithm.ToXmlString(false));
-
-                    var decryptAlgorithm = new Paillier();
-                    decryptAlgorithm.FromXmlString(algorithm.ToXmlString(true));
+                    var encryptAlgorithm = new Paillier(algorithm.ToXmlString(false));
+                    var decryptAlgorithm = new Paillier(algorithm.ToXmlString(true));
 
                     BigInteger a, b;
                     do
                     {
-                        a = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.KeyStruct.getMaxPlaintextBits() / 4), rng);
+                        a = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits() / 4), rng);
                     } while (a == 0);
                     do
                     {
-                        b = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.KeyStruct.getMaxPlaintextBits() / 4), rng);
+                        b = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits() / 4), rng);
                     } while (b == 0);
 
                     if (rnd.Next() % 2 == 0) // randomly change signs
