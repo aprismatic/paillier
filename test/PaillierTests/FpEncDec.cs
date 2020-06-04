@@ -38,8 +38,8 @@ namespace PaillierTests
 
                     var decryptAlgorithm = new Paillier(algorithm.ToXmlString(true));
 
-                    var n = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits() - 1), rng);
-                    var d = new BigInteger(Math.Pow(10, (rnd.Next() % algorithm.GetPlaintextDecPlace()) + 1));
+                    var n = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits - 1), rng);
+                    var d = new BigInteger(Math.Pow(10, (rnd.Next() % algorithm.PlaintextDecPlace) + 1));
                     var f = new BigFraction(n, d);
                     if (rnd.Next() % 2 == 0) // random sign
                         f *= -1;
