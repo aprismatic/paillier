@@ -43,14 +43,14 @@ namespace PaillierTests
                     BigFraction a, b;
                     do
                     {
-                        var n = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits() / 4), rng);
-                        var d = new BigInteger(Math.Pow(10, (rnd.Next() % algorithm.GetPlaintextDecPlace()) + 1));
+                        var n = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits / 4), rng);
+                        var d = new BigInteger(Math.Pow(10, (rnd.Next() % algorithm.PlaintextDecPlace) + 1));
                         a = new BigFraction(n, d);
                     } while (a == 0);
                     do
                     {
-                        var n = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits() / 4), rng);
-                        var d = new BigInteger(Math.Pow(10, (rnd.Next() % algorithm.GetPlaintextDecPlace()) + 1));
+                        var n = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits / 4), rng);
+                        var d = new BigInteger(Math.Pow(10, (rnd.Next() % algorithm.PlaintextDecPlace) + 1));
                         b = new BigFraction(n, d);
                     } while (b == 0);
 

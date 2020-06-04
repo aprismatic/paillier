@@ -43,11 +43,11 @@ namespace PaillierTests
                     BigInteger a, b;
                     do
                     {
-                        a = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits() / 4), rng);
+                        a = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits / 4), rng);
                     } while (a == 0);
                     do
                     {
-                        b = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits() / 4), rng);
+                        b = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits / 4), rng);
                     } while (b == 0);
 
                     if (rnd.Next() % 2 == 0) // randomly change signs

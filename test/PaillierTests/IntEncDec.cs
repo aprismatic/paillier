@@ -40,7 +40,7 @@ namespace PaillierTests
 
                     var z = new BigInteger();
 
-                    z = z.GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits() - 1), rng);
+                    z = z.GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits - 1), rng);
                     if (rnd.Next() % 2 == 0) // random sign
                         z = -z;
 

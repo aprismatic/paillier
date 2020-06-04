@@ -13,6 +13,13 @@ namespace Aprismatic.PaillierExt
         private readonly PaillierEncryptor encryptor;
         private readonly PaillierDecryptor decryptor;
 
+        public int MaxPlaintextBits => PaillierKeyStruct.MaxPlaintextBits;
+        public BigInteger PlaintextExp => PaillierKeyStruct.PlaintextExp;
+        public int PlaintextDecPlace => PaillierKeyStruct.PlaintextDecPlace;
+        public int CiphertextLength => keyStruct.CiphertextLength;
+        public BigInteger NSquare => keyStruct.NSquare;
+        public int NSquareLength => keyStruct.NSquareLength;
+
         public Paillier(int keySize)
         {
             LegalKeySizesValue = new[] { new KeySizes(384, 1088, 8) };
@@ -45,10 +52,10 @@ namespace Aprismatic.PaillierExt
 
             var prms = new PaillierParameters();
             var keyValues = XDocument.Parse(Xml).Element("PaillierKeyValue");
-            prms.N = Convert.FromBase64String((String) keyValues.Element("N") ?? "");
-            prms.G = Convert.FromBase64String((String) keyValues.Element("G") ?? "");
-            prms.Lambda = Convert.FromBase64String((String) keyValues.Element("Lambda") ?? "");
-            prms.Miu = Convert.FromBase64String((String) keyValues.Element("Miu") ?? "");
+            prms.N = Convert.FromBase64String((String)keyValues.Element("N") ?? "");
+            prms.G = Convert.FromBase64String((String)keyValues.Element("G") ?? "");
+            prms.Lambda = Convert.FromBase64String((String)keyValues.Element("Lambda") ?? "");
+            prms.Miu = Convert.FromBase64String((String)keyValues.Element("Miu") ?? "");
 
             keyStruct = new PaillierKeyStruct(
                 new BigInteger(prms.N),
@@ -62,10 +69,6 @@ namespace Aprismatic.PaillierExt
             encryptor = new PaillierEncryptor(keyStruct);
             decryptor = new PaillierDecryptor(keyStruct);
         }
-
-        public int MaxPlaintextBits() => PaillierKeyStruct.MaxPlaintextBits;
-        public BigInteger PlaintextExp => PaillierKeyStruct.PlaintextExp;
-        public int GetPlaintextDecPlace() => PaillierKeyStruct.PlaintextDecPlace;
 
         // TODO: check again for Miu
         private PaillierKeyStruct CreateKeyPair()
