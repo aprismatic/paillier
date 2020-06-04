@@ -9,7 +9,7 @@ namespace Aprismatic.PaillierExt
 {
     public class Paillier : AsymmetricAlgorithm, IDisposable
     {
-        private readonly PaillierKeyStruct keyStruct;
+        public PaillierKeyStruct KeyStruct { get; }
         private readonly PaillierEncryptor encryptor;
         private readonly PaillierDecryptor decryptor;
 
@@ -17,26 +17,26 @@ namespace Aprismatic.PaillierExt
         {
             LegalKeySizesValue = new[] { new KeySizes(384, 1088, 8) };
             KeySizeValue = keySize;
-            keyStruct = CreateKeyPair();
-            encryptor = new PaillierEncryptor(keyStruct);
-            decryptor = new PaillierDecryptor(keyStruct);
+            KeyStruct = CreateKeyPair();
+            encryptor = new PaillierEncryptor(KeyStruct);
+            decryptor = new PaillierDecryptor(KeyStruct);
         }
 
         public Paillier(PaillierParameters prms)
         {
             LegalKeySizesValue = new[] { new KeySizes(384, 1088, 8) };
 
-            keyStruct = new PaillierKeyStruct(
+            KeyStruct = new PaillierKeyStruct(
                 new BigInteger(prms.N),
                 new BigInteger(prms.G),
                 (prms.Lambda?.Length ?? 0) > 0 ? new BigInteger(prms.Lambda) : BigInteger.Zero,
                 (prms.Miu?.Length ?? 0) > 0 ? new BigInteger(prms.Miu) : BigInteger.Zero
             );
 
-            KeySizeValue = keyStruct.NLength * 8;
+            KeySizeValue = KeyStruct.NLength * 8;
 
-            encryptor = new PaillierEncryptor(keyStruct);
-            decryptor = new PaillierDecryptor(keyStruct);
+            encryptor = new PaillierEncryptor(KeyStruct);
+            decryptor = new PaillierDecryptor(KeyStruct);
         }
 
         public Paillier(string Xml)
@@ -45,22 +45,22 @@ namespace Aprismatic.PaillierExt
 
             var prms = new PaillierParameters();
             var keyValues = XDocument.Parse(Xml).Element("PaillierKeyValue");
-            prms.N = Convert.FromBase64String((String) keyValues.Element("N") ?? "");
-            prms.G = Convert.FromBase64String((String) keyValues.Element("G") ?? "");
-            prms.Lambda = Convert.FromBase64String((String) keyValues.Element("Lambda") ?? "");
-            prms.Miu = Convert.FromBase64String((String) keyValues.Element("Miu") ?? "");
+            prms.N = Convert.FromBase64String((String)keyValues.Element("N") ?? "");
+            prms.G = Convert.FromBase64String((String)keyValues.Element("G") ?? "");
+            prms.Lambda = Convert.FromBase64String((String)keyValues.Element("Lambda") ?? "");
+            prms.Miu = Convert.FromBase64String((String)keyValues.Element("Miu") ?? "");
 
-            keyStruct = new PaillierKeyStruct(
+            KeyStruct = new PaillierKeyStruct(
                 new BigInteger(prms.N),
                 new BigInteger(prms.G),
                 new BigInteger(prms.Lambda),
                 new BigInteger(prms.Miu)
             );
 
-            KeySizeValue = keyStruct.NLength * 8;
+            KeySizeValue = KeyStruct.NLength * 8;
 
-            encryptor = new PaillierEncryptor(keyStruct);
-            decryptor = new PaillierDecryptor(keyStruct);
+            encryptor = new PaillierEncryptor(KeyStruct);
+            decryptor = new PaillierDecryptor(KeyStruct);
         }
 
         public int MaxPlaintextBits() => PaillierKeyStruct.MaxPlaintextBits;
@@ -108,7 +108,7 @@ namespace Aprismatic.PaillierExt
 
         public byte[] EncryptDataOld(BigFraction message)
         {
-            using (var encryptor = new PaillierEncryptor(keyStruct))
+            using (var encryptor = new PaillierEncryptor(KeyStruct))
             {
                 return encryptor.ProcessBigIntegerOld(message);
             }
@@ -116,14 +116,14 @@ namespace Aprismatic.PaillierExt
 
         public byte[] EncryptData(BigFraction message)
         {
-            var res = new byte[keyStruct.CiphertextBlocksize * 2];
+            var res = new byte[KeyStruct.CiphertextBlocksize * 2];
             encryptor.ProcessBigInteger(message, res.AsSpan());
             return res;
         }
 
         public BigFraction DecryptDataOld(byte[] p_data)
         {
-            var decryptor = new PaillierDecryptor(keyStruct);
+            var decryptor = new PaillierDecryptor(KeyStruct);
 
             return decryptor.ProcessByteBlockOld(p_data);
         }
@@ -135,12 +135,12 @@ namespace Aprismatic.PaillierExt
 
         public byte[] Add(byte[] first, byte[] second)
         {
-            return PaillierHomomorphism.Add(first, second, keyStruct.NSquare.ToByteArray());
+            return PaillierHomomorphism.Add(first, second, KeyStruct.NSquare.ToByteArray());
         }
 
         public byte[] Subtract(byte[] first, byte[] second)
         {
-            return PaillierHomomorphism.Subtract(first, second, keyStruct.NSquare.ToByteArray());
+            return PaillierHomomorphism.Subtract(first, second, KeyStruct.NSquare.ToByteArray());
         }
 
         public override string ToXmlString(bool includePrivateParameters)
@@ -168,15 +168,15 @@ namespace Aprismatic.PaillierExt
         {
             var prms = new PaillierParameters
             {
-                N = keyStruct.N.ToByteArray(),
-                G = keyStruct.G.ToByteArray()
+                N = KeyStruct.N.ToByteArray(),
+                G = KeyStruct.G.ToByteArray()
             };
 
             // if required, include the private value, X
             if (includePrivateParams)
             {
-                prms.Lambda = keyStruct.Lambda.ToByteArray();
-                prms.Miu = keyStruct.Miu.ToByteArray();
+                prms.Lambda = KeyStruct.Lambda.ToByteArray();
+                prms.Miu = KeyStruct.Miu.ToByteArray();
             }
             else
             {
