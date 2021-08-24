@@ -2,14 +2,26 @@ using System.Numerics;
 
 namespace Aprismatic.PaillierExt
 {
+    public struct PaillierKeyDefaults
+    {
+        public static int DefaultMaxPlaintextBits = 128;
+        public static int DefaultPlaintextDecPlace = 12;
+    }
+
     public struct PaillierKeyStruct
     {
+        // PUBLIC KEY
         public readonly BigInteger N;
         public readonly BigInteger G;
-        public readonly BigInteger Lambda;
-        public readonly BigInteger Miu;
+        public readonly int MaxPlaintextBits;
+        public readonly int PlaintextDecPlace; // decimal places allowed in plain text
 
-        public PaillierKeyStruct(BigInteger n, BigInteger g, BigInteger lambda, BigInteger miu)
+        // PRIVATE KEY
+        public readonly BigInteger Lambda;
+        public readonly BigInteger Mu;
+
+        // CONSTRUCTOR
+        public PaillierKeyStruct(BigInteger n, BigInteger g, BigInteger lambda, BigInteger mu, int maxptbits, int ptdecplaces)
         {
             N = n;
             NSquare = n * n;
@@ -19,20 +31,26 @@ namespace Aprismatic.PaillierExt
 
             G = g;
 
+            MaxPlaintextBits = maxptbits;
+            PlaintextDecPlace = ptdecplaces;
+
+            PlaintextExp = BigInteger.Pow(10, PlaintextDecPlace);
+            MaxRawPlaintext = BigInteger.Pow(2, MaxPlaintextBits) - BigInteger.One;
+            MaxEncryptableValue = MaxRawPlaintext >> 1;
+
             Lambda = lambda;
 
-            Miu = miu;
+            Mu = mu;
 
             CiphertextBlocksize = NLength * 2 + 2;      // We add 2 because last bit of a BigInteger is reserved to store its sign.
             CiphertextLength = CiphertextBlocksize * 2; // Therefore, theoretically, each part of ciphertext might need an extra byte to hold that one bit
         }
 
-        public const int MaxPlaintextBits = 128;
-        public const int PlaintextDecPlace = 12; // 12 decimal places allowed in plain text
-        public static readonly BigInteger PlaintextExp = BigInteger.Pow(10, PlaintextDecPlace);
-
-        public static readonly BigInteger MaxRawPlaintext = BigInteger.Pow(2, MaxPlaintextBits) - BigInteger.One;
-        public static readonly BigInteger MaxEncryptableValue = MaxRawPlaintext >> 1;
+        // HELPER VALUES
+        // These values are derived from the pub/priv key and precomputed for faster processing
+        public readonly BigInteger PlaintextExp;
+        public readonly BigInteger MaxRawPlaintext;
+        public readonly BigInteger MaxEncryptableValue;
 
         public readonly int NBitCount;
         public readonly int NLength;
@@ -41,5 +59,31 @@ namespace Aprismatic.PaillierExt
 
         public readonly int CiphertextBlocksize;
         public readonly int CiphertextLength;
+
+        public PaillierParameters ExportParameters(bool includePrivateParams)
+        {
+            var prms = new PaillierParameters
+            {
+                N = N.ToByteArray(),
+                G = G.ToByteArray(),
+                MaxPlaintextBits = MaxPlaintextBits,
+                PlaintextDecPlace = PlaintextDecPlace
+            };
+
+            // if required, include the private key values Lambda and Mu
+            if (includePrivateParams)
+            {
+                prms.Lambda = Lambda.ToByteArray();
+                prms.Mu = Mu.ToByteArray();
+            }
+            else
+            {
+                // ensure that we zero the value
+                prms.Lambda = BigInteger.Zero.ToByteArray();
+                prms.Mu = BigInteger.Zero.ToByteArray();
+            }
+
+            return prms;
+        }
     }
 }

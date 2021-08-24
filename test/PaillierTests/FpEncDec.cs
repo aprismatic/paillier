@@ -35,7 +35,6 @@ namespace PaillierTests
                     var algorithm = new Paillier(keySize);
 
                     var encryptAlgorithm = new Paillier(algorithm.ToXmlString(false));
-
                     var decryptAlgorithm = new Paillier(algorithm.ToXmlString(true));
 
                     var n = new BigInteger().GenRandomBits(rnd.Next(1, algorithm.MaxPlaintextBits - 1), rng);
