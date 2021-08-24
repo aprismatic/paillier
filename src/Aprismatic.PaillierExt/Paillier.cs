@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Security.Cryptography;
-using System.Text;
-using System.Xml.Linq;
 using System.Numerics;
 using Aprismatic.PaillierExt.Homomorphism;
 
@@ -13,23 +11,24 @@ namespace Aprismatic.PaillierExt
         private readonly PaillierEncryptor encryptor;
         private readonly PaillierDecryptor decryptor;
 
-        public int MaxPlaintextBits => PaillierKeyStruct.MaxPlaintextBits;
-        public BigInteger PlaintextExp => PaillierKeyStruct.PlaintextExp;
-        public int PlaintextDecPlace => PaillierKeyStruct.PlaintextDecPlace;
+        public int MaxPlaintextBits => keyStruct.MaxPlaintextBits;
+        public BigInteger MaxEncryptableValue => keyStruct.MaxEncryptableValue;
+        public BigInteger PlaintextExp => keyStruct.PlaintextExp;
+        public int PlaintextDecPlace => keyStruct.PlaintextDecPlace;
         public int CiphertextLength => keyStruct.CiphertextLength;
         public BigInteger NSquare => keyStruct.NSquare;
         public int NSquareLength => keyStruct.NSquareLength;
 
-        public Paillier(int keySize)
+        public Paillier(int keySize) // TODO: Constructor should probably optionally accept an RNG
         {
             LegalKeySizesValue = new[] { new KeySizes(384, 1088, 8) };
             KeySizeValue = keySize;
-            keyStruct = CreateKeyPair();
+            keyStruct = CreateKeyPair(PaillierKeyDefaults.DefaultMaxPlaintextBits, PaillierKeyDefaults.DefaultPlaintextDecPlace);
             encryptor = new PaillierEncryptor(keyStruct);
             decryptor = new PaillierDecryptor(keyStruct);
         }
 
-        public Paillier(PaillierParameters prms)
+        public Paillier(PaillierParameters prms) // TODO: Consolidate constructors in one method
         {
             LegalKeySizesValue = new[] { new KeySizes(384, 1088, 8) };
 
@@ -37,43 +36,23 @@ namespace Aprismatic.PaillierExt
                 new BigInteger(prms.N),
                 new BigInteger(prms.G),
                 (prms.Lambda?.Length ?? 0) > 0 ? new BigInteger(prms.Lambda) : BigInteger.Zero,
-                (prms.Miu?.Length ?? 0) > 0 ? new BigInteger(prms.Miu) : BigInteger.Zero
+                (prms.Mu?.Length ?? 0) > 0 ? new BigInteger(prms.Mu) : BigInteger.Zero,
+                prms.MaxPlaintextBits,
+                prms.PlaintextDecPlace
             );
 
-            KeySizeValue = keyStruct.NLength * 8;
+            KeySizeValue = keyStruct.NLength * 8; // TODO: Validate that key is of legal size
 
             encryptor = new PaillierEncryptor(keyStruct);
             decryptor = new PaillierDecryptor(keyStruct);
         }
 
-        public Paillier(string Xml)
+        public Paillier(string Xml) : this(PaillierParameters.FromXml(Xml))
+        { }
+
+        private PaillierKeyStruct CreateKeyPair(int maxptbits, int ptdecplaces) // TODO: This method should probably move to KeyStruct
         {
-            LegalKeySizesValue = new[] { new KeySizes(384, 1088, 8) };
-
-            var prms = new PaillierParameters();
-            var keyValues = XDocument.Parse(Xml).Element("PaillierKeyValue");
-            prms.N = Convert.FromBase64String((String)keyValues.Element("N") ?? "");
-            prms.G = Convert.FromBase64String((String)keyValues.Element("G") ?? "");
-            prms.Lambda = Convert.FromBase64String((String)keyValues.Element("Lambda") ?? "");
-            prms.Miu = Convert.FromBase64String((String)keyValues.Element("Miu") ?? "");
-
-            keyStruct = new PaillierKeyStruct(
-                new BigInteger(prms.N),
-                new BigInteger(prms.G),
-                new BigInteger(prms.Lambda),
-                new BigInteger(prms.Miu)
-            );
-
-            KeySizeValue = keyStruct.NLength * 8;
-
-            encryptor = new PaillierEncryptor(keyStruct);
-            decryptor = new PaillierDecryptor(keyStruct);
-        }
-
-        // TODO: check again for Miu
-        private PaillierKeyStruct CreateKeyPair()
-        {
-            BigInteger N, Lambda, G, Miu;
+            BigInteger N, Lambda, G, Mu;
 
             // create the large prime number, p and q
             // p and q are assumed to have the same bit length (e.g., 192 bit each, so that N is 384)
@@ -87,34 +66,24 @@ namespace Aprismatic.PaillierExt
                 p = p.GenPseudoPrime(halfKeyStrength, 16, rng);
                 q = q.GenPseudoPrime(halfKeyStrength, 16, rng);
 
-                // compute N
-                // N = p*q
                 N = p * q;
             } while (N.BitCount() < KeySizeValue - 7);
 
             // compute G
             //  First option:  G is random in Z*(N^2)
             //  Second option: G = N + 1
-            G = N + 1;
+            G = N + BigInteger.One;
 
             // compute lambda
             //  lambda = lcm(p-1, q-1) = (p-1)*(q-1)/gcd(p-1, q-1)
             //  or simpler variant, lambda = (p-1)(q-1), since p and q have same length
-            Lambda = (p - 1) * (q - 1);
+            Lambda = (p - BigInteger.One) * (q - BigInteger.One);
 
-            // Miu = (L(g^lambda mod NSq))^-1 mod n
-            // or simple: Miu = lambda^-1 (mod n)
-            Miu = Lambda.ModInverse(N);
+            // Mu = (L(g^lambda mod NSq))^-1 mod n
+            // or simple: Mu = lambda^-1 (mod n)
+            Mu = Lambda.ModInverse(N);
 
-            return new PaillierKeyStruct(N, G, Lambda, Miu);
-        }
-
-        public byte[] EncryptDataOld(BigFraction message)
-        {
-            using (var encryptor = new PaillierEncryptor(keyStruct))
-            {
-                return encryptor.ProcessBigIntegerOld(message);
-            }
+            return new PaillierKeyStruct(N, G, Lambda, Mu, maxptbits, ptdecplaces);
         }
 
         public byte[] EncryptData(BigFraction message)
@@ -122,13 +91,6 @@ namespace Aprismatic.PaillierExt
             var res = new byte[keyStruct.CiphertextBlocksize * 2];
             encryptor.ProcessBigInteger(message, res.AsSpan());
             return res;
-        }
-
-        public BigFraction DecryptDataOld(byte[] p_data)
-        {
-            var decryptor = new PaillierDecryptor(keyStruct);
-
-            return decryptor.ProcessByteBlockOld(p_data);
         }
 
         public BigFraction DecryptData(byte[] p_data)
@@ -146,54 +108,14 @@ namespace Aprismatic.PaillierExt
             return PaillierHomomorphism.Subtract(first, second, keyStruct.NSquare.ToByteArray());
         }
 
+        public PaillierParameters ExportParameters(bool includePrivateParams) => keyStruct.ExportParameters(includePrivateParams);
+
         public override string ToXmlString(bool includePrivateParameters)
         {
             var prms = ExportParameters(includePrivateParameters);
-            var sb = new StringBuilder();
-
-            sb.Append("<PaillierKeyValue>");
-
-            sb.Append("<N>" + Convert.ToBase64String(prms.N) + "</N>");
-            sb.Append("<G>" + Convert.ToBase64String(prms.G) + "</G>");
-
-            if (includePrivateParameters)
-            {
-                sb.Append("<Lambda>" + Convert.ToBase64String(prms.Lambda) + "</Lambda>");
-                sb.Append("<Miu>" + Convert.ToBase64String(prms.Miu) + "</Miu>");
-            }
-
-            sb.Append("</PaillierKeyValue>");
-
-            return sb.ToString();
+            return prms.ToXml(includePrivateParameters);
         }
 
-        public PaillierParameters ExportParameters(bool includePrivateParams)
-        {
-            var prms = new PaillierParameters
-            {
-                N = keyStruct.N.ToByteArray(),
-                G = keyStruct.G.ToByteArray()
-            };
-
-            // if required, include the private value, X
-            if (includePrivateParams)
-            {
-                prms.Lambda = keyStruct.Lambda.ToByteArray();
-                prms.Miu = keyStruct.Miu.ToByteArray();
-            }
-            else
-            {
-                // ensure that we zero the value
-                prms.Lambda = new byte[1];
-                prms.Miu = new byte[1];
-            }
-
-            return prms;
-        }
-
-        public new void Dispose()
-        {
-            encryptor.Dispose();
-        }
+        public new void Dispose() => encryptor.Dispose();
     }
 }
