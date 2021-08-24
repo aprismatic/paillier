@@ -4,8 +4,8 @@ namespace Aprismatic.PaillierExt
 {
     public struct PaillierKeyDefaults
     {
-        public static int DefaultMaxPlaintextBits = 128;
-        public static int DefaultPlaintextDecPlace = 12;
+        public const int DefaultMaxPlaintextBits = 128;
+        public const int DefaultPlaintextDecPlace = 12;
     }
 
     public struct PaillierKeyStruct
