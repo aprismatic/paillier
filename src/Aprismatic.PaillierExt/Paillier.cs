@@ -19,10 +19,11 @@ namespace Aprismatic.PaillierExt
         public BigInteger NSquare => keyStruct.NSquare;
         public int NSquareLength => keyStruct.NSquareLength;
 
+        // TODO: Constructors should allow to specify MaxPlaintextBits and PlaintextDecPlace
         public Paillier(int keySize) // TODO: Constructor should probably optionally accept an RNG
         {
             LegalKeySizesValue = new[] { new KeySizes(384, 1088, 8) };
-            KeySizeValue = keySize;
+            KeySizeValue = keySize; // TODO: Validate that key is of legal size
             keyStruct = CreateKeyPair(PaillierKeyDefaults.DefaultMaxPlaintextBits, PaillierKeyDefaults.DefaultPlaintextDecPlace);
             encryptor = new PaillierEncryptor(keyStruct);
             decryptor = new PaillierDecryptor(keyStruct);
@@ -35,8 +36,8 @@ namespace Aprismatic.PaillierExt
             keyStruct = new PaillierKeyStruct(
                 new BigInteger(prms.N),
                 new BigInteger(prms.G),
-                (prms.Lambda?.Length ?? 0) > 0 ? new BigInteger(prms.Lambda) : BigInteger.Zero,
-                (prms.Mu?.Length ?? 0) > 0 ? new BigInteger(prms.Mu) : BigInteger.Zero,
+                new BigInteger(prms.Lambda),
+                new BigInteger(prms.Mu),
                 prms.MaxPlaintextBits,
                 prms.PlaintextDecPlace
             );
@@ -89,7 +90,7 @@ namespace Aprismatic.PaillierExt
         public byte[] EncryptData(BigFraction message)
         {
             var res = new byte[keyStruct.CiphertextBlocksize * 2];
-            encryptor.ProcessBigInteger(message, res.AsSpan());
+            encryptor.ProcessBigFraction(message, res.AsSpan());
             return res;
         }
 

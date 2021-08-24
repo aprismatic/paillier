@@ -15,7 +15,7 @@ namespace Aprismatic.PaillierExt
             _keyStruct = keyStruct;
         }
 
-        public void ProcessBigInteger(BigFraction message, Span<byte> res)
+        public void ProcessBigFraction(BigFraction message, Span<byte> res)
         {
             if (message.Denominator > _keyStruct.PlaintextExp)
             {
