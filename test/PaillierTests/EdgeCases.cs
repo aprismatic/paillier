@@ -15,9 +15,18 @@ namespace PaillierTests
         private readonly Random rnd = new Random();
         private readonly RandomNumberGenerator rng = new RNGCryptoServiceProvider();
 
+        private readonly int minKeySize;
+        private readonly int maxKeySize;
+        private readonly int step;
+
         public EdgeCases(ITestOutputHelper output)
         {
             this.output = output;
+
+            using var tmpElG = new Paillier(512);
+            minKeySize = tmpElG.LegalKeySizes[0].MinSize;
+            maxKeySize = tmpElG.LegalKeySizes[0].MaxSize;
+            step = (maxKeySize - minKeySize) / tmpElG.LegalKeySizes[0].SkipSize;
         }
 
         public void Dispose()
@@ -28,7 +37,7 @@ namespace PaillierTests
         [Fact(DisplayName = "Zero")]
         public void TestZero()
         {
-            for (var keySize = 384; keySize <= 1088; keySize += 8)
+            for (var keySize = minKeySize; keySize <= maxKeySize; keySize += step)
             {
                 var algorithm = new Paillier(keySize);
 
@@ -72,7 +81,7 @@ namespace PaillierTests
             var min = -max; // should work
             var min_minus = min - 1; // should throw
 
-            for (var keySize = 384; keySize <= 1088; keySize += 8)
+            for (var keySize = minKeySize; keySize <= maxKeySize; keySize += step)
             {
                 var algorithm = new Paillier(keySize);
 
@@ -112,7 +121,7 @@ namespace PaillierTests
         [Fact(DisplayName = "Big Denominator")]
         public void BigDenominator()
         {
-            for (var keySize = 384; keySize <= 1088; keySize += 8)
+            for (var keySize = minKeySize; keySize <= maxKeySize; keySize += step)
             {
                 var algorithm = new Paillier(keySize);
 

@@ -15,9 +15,18 @@ namespace PaillierTests
         private readonly Random rnd = new Random();
         private readonly RandomNumberGenerator rng = new RNGCryptoServiceProvider();
 
+        private readonly int minKeySize;
+        private readonly int maxKeySize;
+        private readonly int step;
+
         public SimpleFastTests(ITestOutputHelper output)
         {
             this.output = output;
+
+            using var tmpElG = new Paillier(512);
+            minKeySize = tmpElG.LegalKeySizes[0].MinSize;
+            maxKeySize = tmpElG.LegalKeySizes[0].MaxSize;
+            step = (maxKeySize - minKeySize) / tmpElG.LegalKeySizes[0].SkipSize;
         }
 
         public void Dispose()
@@ -29,7 +38,7 @@ namespace PaillierTests
         public void TestSpecificCases()
         {
             {
-                var algorithm = new Paillier(384);
+                var algorithm = new Paillier(minKeySize);
 
                 var z = new BigFraction(BigInteger.Parse("1000"), BigInteger.Parse("1"));
 
@@ -43,7 +52,7 @@ namespace PaillierTests
 
             {
                 // based on https://github.com/bazzilic/PaillierExt/issues/15
-                for (var keySize = 384; keySize <= 1088; keySize += 8)
+                for (var keySize = minKeySize; keySize <= maxKeySize; keySize += step)
                 {
                     var algorithm = new Paillier(keySize);
 
@@ -64,7 +73,7 @@ namespace PaillierTests
             }
 
             {
-                for (var keySize = 384; keySize <= 1088; keySize += 8)
+                for (var keySize = minKeySize; keySize <= maxKeySize; keySize += step)
                 {
                     var algorithm = new Paillier(keySize);
 
@@ -108,7 +117,7 @@ namespace PaillierTests
         public void TestNegativeCases()
         {
             {
-                var algorithm = new Paillier(384);
+                var algorithm = new Paillier(minKeySize);
 
                 //Test negative number
                 var z = new BigInteger(8);
@@ -140,7 +149,7 @@ namespace PaillierTests
         public void TestFloatingPoint()
         {
             {
-                var algorithm = new Paillier(384);
+                var algorithm = new Paillier(minKeySize);
 
                 //Test 1 decimal place
                 var z = new BigFraction(BigInteger.Parse("1"), BigInteger.Parse("10"));
@@ -173,7 +182,7 @@ namespace PaillierTests
         public void TestNegativeFloatingPoint()
         {
             {
-                var algorithm = new Paillier(384);
+                var algorithm = new Paillier(minKeySize);
 
                 //Test 0 > plaintext > -1
                 var z = new BigFraction(BigInteger.Parse("-1001"), BigInteger.Parse("100"));
