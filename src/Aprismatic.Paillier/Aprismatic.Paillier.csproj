@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Extension for the .NET Framework cryptography subsystem, which introduces the Paillier public key cryptosystem with support for homomorphic addition.</Description>
-    <RepositoryUrl>https://github.com/aprismatic/paillierext</RepositoryUrl>
+    <RepositoryUrl>https://github.com/aprismatic/paillier</RepositoryUrl>
     <AssemblyName>Aprismatic.Paillier</AssemblyName>
     <RootNamespace>Aprismatic.Paillier</RootNamespace>
   </PropertyGroup>
