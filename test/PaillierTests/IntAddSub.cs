@@ -2,7 +2,7 @@
 using System.Numerics;
 using System.Security.Cryptography;
 using Aprismatic;
-using Aprismatic.PaillierExt;
+using Aprismatic.Paillier;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -37,9 +37,6 @@ namespace PaillierTests
         [Fact(DisplayName = "INT (ADD/SUB, +-)")]
         public void TestMultiplication_Batch()
         {
-            var rnd = new Random();
-            var rng = new RNGCryptoServiceProvider();
-
             for (var i = 0; i < Globals.iterations; i++)
             {
                 for (var keySize = minKeySize; keySize <= maxKeySize; keySize += step)

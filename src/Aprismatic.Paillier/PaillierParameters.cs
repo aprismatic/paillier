@@ -3,7 +3,7 @@ using System.Numerics;
 using System.Text;
 using System.Xml.Linq;
 
-namespace Aprismatic.PaillierExt
+namespace Aprismatic.Paillier
 {
     [Serializable]
     public struct PaillierParameters

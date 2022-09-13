@@ -2,7 +2,7 @@
 using System.Numerics;
 using Aprismatic;
 using System.Security.Cryptography;
-using Aprismatic.PaillierExt;
+using Aprismatic.Paillier;
 using Xunit;
 using Xunit.Abstractions;
 
