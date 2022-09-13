@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Description>Extension for the .NET Framework cryptography subsystem, which introduces the Paillier public key cryptosystem with support for homomorphic addition.</Description>
+    <RepositoryUrl>https://github.com/aprismatic/paillierext</RepositoryUrl>
+    <AssemblyName>Aprismatic.Paillier</AssemblyName>
+    <RootNamespace>Aprismatic.Paillier</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Aprismatic.BigFraction" Version="0.2.1" />
+    <PackageReference Include="Aprismatic.BigIntegerExt" Version="0.2.0.2" />
+    <PackageReference Include="Aprismatic.Paillier.Homomorphism" Version="0.11.0" />
+  </ItemGroup>
+</Project>

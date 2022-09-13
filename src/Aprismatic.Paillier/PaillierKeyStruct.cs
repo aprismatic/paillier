@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Aprismatic.PaillierExt
+namespace Aprismatic.Paillier
 {
     public struct PaillierKeyDefaults
     {
