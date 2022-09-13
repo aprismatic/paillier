@@ -114,5 +114,37 @@ namespace PaillierTests
                 }
             }
         }
+
+        [Fact(DisplayName = "Egg timer")]
+        public void TestEggTimer()
+        {
+            var paillier = new Paillier(512); // generate a new key pair
+            var public_key = paillier.ToXmlString(false); // export public key
+
+            // Encrypt 08:15 AM
+            var h = paillier.EncryptData(08);
+            var m = paillier.EncryptData(15);
+
+            var eggTimeEnc = egg_timer(h, m, public_key); // <- we call the homomorphic circuit
+
+            var eggTime = paillier.DecryptData(eggTimeEnc); // decrypt the result
+
+            // check that everything was computed correctly
+            Assert.Equal(501, eggTime); // 08:15 AM + 6 minutes = 495 minutes + 6 minutes = 501 minutes
+        }
+
+        // Here is the homomorphic circuit for our egg timer. Note that it never sees the plaintext values or
+        // the private key. It can be executed in untrusted environment (at least under honest-but-curious model).
+        public static byte[] egg_timer(byte[] h, byte[] m, string publicKeyXml)
+        {
+            var paillier = new Paillier(publicKeyXml);
+
+            var h2m = paillier.PlaintextMultiply(h, 60); // hours to minutes
+            var totalMinutesSinceMidnight = paillier.Add(h2m, m); // add minutes
+
+            var eggTime = paillier.PlaintextAdd(totalMinutesSinceMidnight, 6); // add six minutes
+
+            return eggTime;
+        }
     }
 }
