@@ -38,24 +38,6 @@ namespace Aprismatic.Paillier
             Decryptor = new PaillierDecryptor(keyStruct);
         }
 
-        public Paillier(BigInteger p, BigInteger q)
-        {
-            LegalKeySizesValue = new[] { new KeySizes(384, 1088, 8) };
-
-            var N = p * q;
-            KeySizeValue = N.BitCount();
-
-            if (!LegalKeySizesValue.Any(x => x.MinSize <= KeySizeValue && KeySizeValue <= x.MaxSize && (KeySizeValue - x.MinSize) % x.SkipSize == 0))
-                throw new ArgumentException("Key size is not supported by this algorithm.");
-
-            // TODO: do we need to check that p and q bit count is half of N bit count?
-
-            keyStruct = CreateKeyPair(PaillierKeyDefaults.DefaultMaxPlaintextBits, PaillierKeyDefaults.DefaultPlaintextDecPlace, p, q, N);
-
-            Encryptor = new PaillierEncryptor(keyStruct);
-            Decryptor = new PaillierDecryptor(keyStruct);
-        }
-
         public Paillier(PaillierParameters prms) // TODO: Consolidate constructors in one method
         {
             LegalKeySizesValue = new[] { new KeySizes(384, 1088, 8) };
@@ -169,9 +151,14 @@ namespace Aprismatic.Paillier
 
         public BigFraction Decode(BigInteger n) // TODO: Add tests now that this method is public
         {
+            if (n > keyStruct.MaxEncryptableValueTimesExp)
+                n %= keyStruct.MaxRawPlaintextPlusOneTimesExp;
+
+            if (n > keyStruct.MaxEncryptableValueTimesExp)
+                n -= keyStruct.MaxRawPlaintextPlusOneTimesExp;
+
             var a = new BigFraction(n, keyStruct.PlaintextExp);
-            while (a > keyStruct.MaxEncryptableValue)
-                a -= keyStruct.MaxRawPlaintext + BigFraction.One;
+
             return a;
         }
 
