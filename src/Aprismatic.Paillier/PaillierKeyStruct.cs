@@ -38,6 +38,9 @@ namespace Aprismatic.Paillier
             MaxRawPlaintext = BigInteger.Pow(2, MaxPlaintextBits) - BigInteger.One;
             MaxEncryptableValue = MaxRawPlaintext >> 1;
 
+            MaxRawPlaintextPlusOneTimesExp = (MaxRawPlaintext + BigInteger.One) * PlaintextExp;
+            MaxEncryptableValueTimesExp = MaxEncryptableValue * PlaintextExp;
+
             Lambda = lambda;
 
             Mu = mu;
@@ -49,8 +52,12 @@ namespace Aprismatic.Paillier
         // HELPER VALUES
         // These values are derived from the pub/priv key and precomputed for faster processing
         public readonly BigInteger PlaintextExp;
+
         public readonly BigInteger MaxRawPlaintext;
+        public readonly BigInteger MaxRawPlaintextPlusOneTimesExp;
+
         public readonly BigInteger MaxEncryptableValue;
+        public readonly BigInteger MaxEncryptableValueTimesExp;
 
         public readonly int NBitCount;
         public readonly int NLength;

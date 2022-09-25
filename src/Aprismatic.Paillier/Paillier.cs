@@ -31,7 +31,8 @@ namespace Aprismatic.Paillier
             if (!LegalKeySizesValue.Any(x => x.MinSize <= KeySizeValue && KeySizeValue <= x.MaxSize && (KeySizeValue - x.MinSize) % x.SkipSize == 0))
                 throw new ArgumentException("Key size is not supported by this algorithm.");
 
-            keyStruct = CreateKeyPair(PaillierKeyDefaults.DefaultMaxPlaintextBits, PaillierKeyDefaults.DefaultPlaintextDecPlace);
+            var (p, q, N) = GenPaillierModulus(KeySizeValue);
+            keyStruct = CreateKeyPair(PaillierKeyDefaults.DefaultMaxPlaintextBits, PaillierKeyDefaults.DefaultPlaintextDecPlace, p, q, N);
 
             Encryptor = new PaillierEncryptor(keyStruct);
             Decryptor = new PaillierDecryptor(keyStruct);
@@ -61,47 +62,51 @@ namespace Aprismatic.Paillier
         public Paillier(string Xml) : this(PaillierParameters.FromXml(Xml))
         { }
 
-        private PaillierKeyStruct CreateKeyPair(int maxptbits, int ptdecplaces) // TODO: This method should probably move to KeyStruct
+        private static PaillierKeyStruct CreateKeyPair(int maxptbits, int ptdecplaces, BigInteger p, BigInteger q, BigInteger N) // TODO: This method should probably move to KeyStruct
         {
-            BigInteger N, Lambda, G, Mu;
-
-            // create the large prime number, p and q
-            // p and q are assumed to have the same bit length (e.g., 192 bit each, so that N is 384)
-            // if N length is not the same to keySize, will regenerate p and q which will make a new N
-            using var rng = RandomNumberGenerator.Create();
-            var p = new BigInteger();
-            var q = new BigInteger();
-            var halfKeyStrength = KeySizeValue >> 1; // div 2
-            do
-            {
-                do
-                {
-                    p = p.GenPseudoPrime(halfKeyStrength, 16, rng);
-                } while (p.BitCount() != halfKeyStrength);
-
-                do
-                {
-                    q = q.GenPseudoPrime(halfKeyStrength, 16, rng);
-                } while (q.BitCount() != halfKeyStrength);
-
-                N = p * q;
-            } while (N.BitCount() !=  KeySizeValue);
+            BigInteger Lambda, G, Mu;
 
             // compute G
-            //  First option:  G is random in Z*(N^2)
+            //  First option:  G is random in Z*(N²)
             //  Second option: G = N + 1
             G = N + BigInteger.One;
 
-            // compute lambda
-            //  lambda = lcm(p-1, q-1) = (p-1)*(q-1)/gcd(p-1, q-1)
-            //  or simpler variant, lambda = (p-1)(q-1), since p and q have same length
+            // compute λ
+            //  λ = lcm(p-1, q-1) = (p-1)*(q-1)/gcd(p-1, q-1)
+            //  or simpler variant, λ = (p-1)(q-1), since p and q have same length
             Lambda = (p - BigInteger.One) * (q - BigInteger.One);
 
-            // Mu = (L(g^lambda mod NSq))^-1 mod n
-            // or simple: Mu = lambda^-1 (mod n)
+            // µ = (L(g^λ mod N²))⁻¹  mod N
+            // or simple: µ = λ⁻¹  mod N
             Mu = Lambda.ModInverse(N);
 
             return new PaillierKeyStruct(N, G, Lambda, Mu, maxptbits, ptdecplaces);
+        }
+
+        // TODO: test this method as it becomes part of public API
+        public static (BigInteger p, BigInteger q, BigInteger N) GenPaillierModulus(int keySize)
+        {
+            // create two large prime numbers, p and q
+            // p and q are assumed to have the same bit length (e.g., 192 bit each, so that N is 384)
+            // if N length is not the same to keySize, will regenerate p and q which will make a new N
+
+            using var rng = RandomNumberGenerator.Create();
+
+            BigInteger N, p, q;
+
+            var halfKeyStrength = keySize >> 1; // div 2
+            do
+            {
+                do p = BigInteger.One.GenPseudoPrime(halfKeyStrength, 16, rng);
+                while (p.BitCount() != halfKeyStrength);
+
+                do q = BigInteger.One.GenPseudoPrime(halfKeyStrength, 16, rng);
+                while (q.BitCount() != halfKeyStrength);
+
+                N = p * q;
+            } while (N.BitCount() != keySize);
+
+            return (p, q, N);
         }
         #endregion
 
@@ -146,9 +151,14 @@ namespace Aprismatic.Paillier
 
         public BigFraction Decode(BigInteger n) // TODO: Add tests now that this method is public
         {
+            if (n > keyStruct.MaxEncryptableValueTimesExp)
+                n %= keyStruct.MaxRawPlaintextPlusOneTimesExp;
+
+            if (n > keyStruct.MaxEncryptableValueTimesExp)
+                n -= keyStruct.MaxRawPlaintextPlusOneTimesExp;
+
             var a = new BigFraction(n, keyStruct.PlaintextExp);
-            while (a > keyStruct.MaxEncryptableValue)
-                a -= keyStruct.MaxRawPlaintext + BigFraction.One;
+
             return a;
         }
 
