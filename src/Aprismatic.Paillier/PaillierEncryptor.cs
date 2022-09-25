@@ -19,18 +19,18 @@ namespace Aprismatic.Paillier
         {
             BigInteger R;
 
-            // generate random R ∊ Zn
+            // generate random r ∊ Zn
             var NminusOne = _keyStruct.N - BigInteger.One;
             do
             {
                 R = BigInteger.Zero.GenRandomBits(_keyStruct.NBitCount, rng);
             } while (R <= BigInteger.One || R >= NminusOne);
 
-            // ciphertext c = g^m * r^n mod n^2
+            // ciphertext c = g^m * r^N mod N²
             var RN = BigInteger.ModPow(R, _keyStruct.N, _keyStruct.NSquare);
 
-            // if we use simple key generation (g = n + 1), we can use
-            // (n+1)^m = n*m + 1  mod n^2
+            // if we use simple key generation (g = N + 1), we can use
+            // (N+1)^m = N*m + 1  mod N²
             var Gm = (_keyStruct.N * encodedMessage + BigInteger.One) % _keyStruct.NSquare;
             var Gm_Neg = (_keyStruct.N * encodedMessage_neg + BigInteger.One) % _keyStruct.NSquare;
 
